@@ -11,75 +11,76 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="p-fluid formgrid grid">
+                            <!-- Form Fields with Validation Messages -->
                             <div class="field col-12 md:col-4">
-                                <label>First Name<b class="text-red-500">*</b></label>
+                                <label>First Name<b class="text-red-500"> *</b></label>
                                 <InputText type="text" v-model="form.first_name" />
                                 <small class="p-error" v-if="errors.first_name">{{ errors.first_name }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>Last Name<b class="text-red-500">*</b></label>
+                                <label>Last Name<b class="text-red-500"> *</b></label>
                                 <InputText type="text" v-model="form.last_name" />
                                 <small class="p-error" v-if="errors.last_name">{{ errors.last_name }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>Email Address<b class="text-red-500">*</b></label>
+                                <label>Email Address<b class="text-red-500"> *</b></label>
                                 <InputText type="email" v-model="form.email" />
                                 <small class="p-error" v-if="errors.email">{{ errors.email }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>Gender<b class="text-red-500">*</b></label>
-                                <Dropdown v-model="dropdownValue" :options="dropdownValues" optionLabel="name"
+                                <label>Gender<b class="text-red-500"> *</b></label>
+                                <Dropdown v-model="form.gender" :options="dropdownValues" optionLabel="name"
                                     placeholder="Select" />
-                                <small class="p-error" v-if="errors.company_name">{{ errors.company_name }}</small>
+                                <small class="p-error" v-if="errors.gender">{{ errors.gender }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>Password <b class="text-red-500">*</b></label>
+                                <label>Password <b class="text-red-500"> *</b></label>
+                                <InputText type="password" v-model="form.password" />
+                                <small class="p-error" v-if="errors.password">{{ errors.password }}</small>
+                            </div>
+                            <div class="field col-12 md:col-4">
+                                <label>Re-enter Password <b class="text-red-500"> *</b></label>
                                 <InputText type="password" v-model="form.confirm_password" />
                                 <small class="p-error" v-if="errors.confirm_password">{{ errors.confirm_password }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>Re-enter Password <b class="text-red-500">*</b></label>
-                                <InputText type="password" v-model="form.confirm_password" />
-                                <small class="p-error" v-if="errors.confirm_password">{{ errors.confirm_password }}</small>
-                            </div>
-                            <div class="field col-12 md:col-4">
-                                <label>Address Line 1<b class="text-red-500">*</b></label>
+                                <label>Address Line 1<b class="text-red-500"> *</b></label>
                                 <InputText type="text" v-model="form.addressLine1" />
                                 <small class="p-error" v-if="errors.addressLine1">{{ errors.addressLine1 }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>Address Line 2<b class="text-red-500">*</b></label>
+                                <label>Address Line 2<b class="text-red-500"> *</b></label>
                                 <InputText type="text" v-model="form.addressLine2" />
                                 <small class="p-error" v-if="errors.addressLine2">{{ errors.addressLine2 }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>Town/City<b class="text-red-500">*</b></label>
+                                <label>Town/City<b class="text-red-500"> *</b></label>
                                 <InputText type="text" v-model="form.townOrCity" />
                                 <small class="p-error" v-if="errors.townOrCity">{{ errors.townOrCity }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>Postcode<b class="text-red-500">*</b></label>
+                                <label>Postcode<b class="text-red-500"> *</b></label>
                                 <InputText type="text" v-model="form.postCode" />
                                 <small class="p-error" v-if="errors.postCode">{{ errors.postCode }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>Date of Birth<b class="text-red-500">*</b></label>
+                                <label>Date of Birth<b class="text-red-500"> *</b></label>
                                 <Calendar :showIcon="true" :showButtonBar="true" v-model="form.dob"></Calendar>
                                 <small class="p-error" v-if="errors.dob">{{ errors.dob }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>National Insurance Number<b class="text-red-500">*</b></label>
+                                <label>National Insurance Number<b class="text-red-500"> *</b></label>
                                 <InputText type="text" v-model="form.ni_number" />
                                 <small class="p-error" v-if="errors.ni_number">{{ errors.ni_number }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>Phone Number<b class="text-red-500">*</b></label>
+                                <label>Phone Number<b class="text-red-500"> *</b></label>
                                 <InputText type="text" v-model="form.phone" />
                                 <small class="p-error" v-if="errors.phone">{{ errors.phone }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>Staff Image<b class="text-red-500">*</b></label>
-                                <InputText type="file" v-model="form.image" />
+                                <label>Staff Image<b class="text-red-500"> *</b></label>
+                                <InputText type="file" v-model="form.image" @change="handleImage" ref="staffImage" id="image"/>
                                 <small class="p-error" v-if="errors.image">{{ errors.image }}</small>
                             </div>
                         </div>
@@ -104,6 +105,7 @@
                                         </div>
                                     </template>
                                 </MultiSelect>
+                                <small class="p-error" v-if="errors.licenceTypes">{{ errors.licenceTypes }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
                                 <label>Licence Number<b class="text-red-500"> *</b></label>
@@ -124,7 +126,7 @@
 
                             <div class="field col-12 md:col-4 d-flex align-items-center justify-content-around">
                                 <div class="col-lg-6">
-                                    <label>CPC CARD</label>
+                                    <label><b>CPC CARD</b></label>
                                 </div>
                                 <div class="col-lg-6">
                                     <input type="checkbox" class="form-check-input" id="noCpcCard" v-model="form.noCpcCard">
@@ -144,7 +146,7 @@
                             </div>
                             <div class="field col-12 md:col-4 d-flex align-items-center justify-content-around">
                                 <div class="col-lg-6">
-                                    <label>TACHO CARD</label>
+                                    <label><b>TACHO CARD</b></label>
                                 </div>
                                 <div class="col-lg-6">
                                     <input type="checkbox" class="form-check-input" id="noTachoCard"
@@ -178,7 +180,7 @@
                                 <small class="p-error" v-if="errors.dbsCheck">{{ errors.dbsCheck }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>Does he have a DBS or EDBS (if applicable for your role)?<b class="text-red-500">
+                                <label>Does he want to opt out of the Pension Scheme?<b class="text-red-500">
                                         *</b></label>
                                 <Dropdown v-model="form.optOutOfPension" :options="dbsValues" optionLabel="name"
                                     placeholder="Select" />
@@ -199,12 +201,12 @@
                         <div class="p-fluid formgrid grid">
                             <div class="field col-12 md:col-6">
                                 <label>Upload Driving Licence<b class="text-red-500">*</b></label>
-                                <InputText type="file" v-model="form.drivingLicence" />
+                                <InputText type="file" v-model="form.drivingLicence" ref="licence" @change="handleDrivingLicence" id="drivingLicence"/>
                                 <small class="p-error" v-if="errors.drivingLicence">{{ errors.drivingLicence }}</small>
                             </div>
                             <div class="field col-12 md:col-6">
                                 <label>Upload Proof of Address<b class="text-red-500">*</b></label>
-                                <InputText type="file" v-model="form.proofOfAddress" />
+                                <InputText type="file" v-model="form.proofOfAddress" ref="staffProofOfAddress" @change="handleProofOfAddress" id="proofOfAddress"/>
                                 <small class="p-error" v-if="errors.proofOfAddress">{{ errors.proofOfAddress }}</small>
                             </div>
                             <div class="field col-12 md:col-4 mt-2 mb-4 custom-file">
@@ -248,19 +250,23 @@
         </div>
     </div>
 </template>
-  
+
 <script>
 import { ref } from 'vue';
 import axios from 'axios';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import MultiSelect from 'primevue/multiselect';
+import Calendar from 'primevue/calendar';
+import Textarea from 'primevue/textarea';
 
 export default {
     components: {
         Dropdown,
         InputText,
-        MultiSelect
+        MultiSelect,
+        Calendar,
+        Textarea
     },
     setup() {
         const dropdownValues = ref([
@@ -268,12 +274,10 @@ export default {
             { name: 'Female' },
             { name: 'Other' }
         ]);
-        const dbsValue = ref(null);
         const dbsValues = ref([
             { name: 'Yes' },
             { name: 'No' },
         ]);
-        const dropdownValue = ref(null);
         const multiselectValues = ref([
             { name: 'Class B' },
             { name: 'Class C' },
@@ -281,7 +285,6 @@ export default {
             { name: 'Class D1' },
             { name: 'Class E' }
         ]);
-        const multiselectValue = ref([]);
         const form = ref({
             first_name: '',
             last_name: '',
@@ -294,7 +297,6 @@ export default {
             townOrCity: '',
             postCode: '',
             dob: '',
-            role: '',
             ni_number: '',
             phone: '',
             licenceTypes: [],
@@ -332,10 +334,9 @@ export default {
             townOrCity: null,
             postCode: null,
             dob: null,
-            role: null,
             ni_number: null,
             phone: null,
-            licenceTypes: [],
+            licenceTypes: null,
             licenceNumber: null,
             licenceExpiry: null,
             licenceEndorsements: null,
@@ -351,18 +352,188 @@ export default {
             passport: null,
             cpc: null,
             tacho: null,
-            proofOfAddress: null,
-            noCpcCard: null,
-            noTachoCard: null,
-            noPassport: null,
-            noCPC: null,
-            noTacho: null
+            proofOfAddress: null
         });
         const successMessage = ref('');
 
+        function validateForm() {
+            let valid = true;
+
+            // Validation logic for each field
+            if (!form.value.first_name) {
+                errors.value.first_name = 'First name is required.';
+                valid = false;
+            } else {
+                errors.value.first_name = null;
+            }
+
+            if (!form.value.last_name) {
+                errors.value.last_name = 'Last name is required.';
+                valid = false;
+            } else {
+                errors.value.last_name = null;
+            }
+
+            if (!form.value.email) {
+                errors.value.email = 'Email is required.';
+                valid = false;
+            } else {
+                errors.value.email = null;
+            }
+
+            if (!form.value.password) {
+                errors.value.password = 'Password is required.';
+                valid = false;
+            } else {
+                errors.value.password = null;
+            }
+
+            if (form.value.password !== form.value.confirm_password) {
+                errors.value.confirm_password = 'Passwords do not match.';
+                valid = false;
+            } else {
+                errors.value.confirm_password = null;
+            }
+
+            if (!form.value.gender) {
+                errors.value.gender = 'Gender is required.';
+                valid = false;
+            } else {
+                errors.value.gender = null;
+            }
+
+            if (!form.value.addressLine1) {
+                errors.value.addressLine1 = 'Address Line 1 is required.';
+                valid = false;
+            } else {
+                errors.value.addressLine1 = null;
+            }
+
+            if (!form.value.addressLine2) {
+                errors.value.addressLine2 = 'Address Line 2 is required.';
+                valid = false;
+            } else {
+                errors.value.addressLine1 = null;
+            }
+
+            if (!form.value.townOrCity) {
+                errors.value.townOrCity = 'Town/City is required.';
+                valid = false;
+            } else {
+                errors.value.townOrCity = null;
+            }
+
+            if (!form.value.postCode) {
+                errors.value.postCode = 'Postcode is required.';
+                valid = false;
+            } else {
+                errors.value.postCode = null;
+            }
+
+            if (!form.value.dob) {
+                errors.value.dob = 'Date of Birth is required.';
+                valid = false;
+            } else {
+                errors.value.dob = null;
+            }
+
+            if (!form.value.ni_number) {
+                errors.value.ni_number = 'National Insurance Number is required.';
+                valid = false;
+            } else {
+                errors.value.ni_number = null;
+            }
+
+            if (!form.value.phone) {
+                errors.value.phone = 'Phone Number is required.';
+                valid = false;
+            } else {
+                errors.value.phone = null;
+            }
+
+            if (!form.value.image) {
+                errors.value.image = 'Staff Image is required.';
+                valid = false;
+            } else {
+                errors.value.image = null;
+            }
+
+            if (!form.value.drivingLicence) {
+                errors.value.drivingLicence = 'Driving Licence is required.';
+                valid = false;
+            } else {
+                errors.value.drivingLicence = null;
+            }
+
+            if (!form.value.proofOfAddress) {
+                errors.value.proofOfAddress = 'Proof of Address is required.';
+                valid = false;
+            } else {
+                errors.value.proofOfAddress = null;
+            }
+
+            if (!form.value.licenceTypes.length) {
+                errors.value.licenceTypes = 'Licence Type is required.';
+                valid = false;
+            } else {
+                errors.value.licenceTypes = null;
+            }
+
+            if (!form.value.licenceNumber) {
+                errors.value.licenceNumber = 'Licence Number is required.';
+                valid = false;
+            } else {
+                errors.value.licenceNumber = null;
+            }
+
+            if (!form.value.licenceExpiry) {
+                errors.value.licenceExpiry = 'Licence Expiry is required.';
+                valid = false;
+            } else {
+                errors.value.licenceExpiry = null;
+            }
+
+            if (!form.value.licenceEndorsements) {
+                errors.value.licenceEndorsements = 'Licence Endorsements is required.';
+                valid = false;
+            } else {
+                errors.value.licenceEndorsements = null;
+            }
+
+            if (!form.value.rightToWorkUK) {
+                errors.value.rightToWorkUK = 'Right to Work in the UK is required.';
+                valid = false;
+            } else {
+                errors.value.rightToWorkUK = null;
+            }
+
+            if (!form.value.dbsCheck) {
+                errors.value.dbsCheck = 'DBS or EDBS Check is required.';
+                valid = false;
+            } else {
+                errors.value.dbsCheck = null;
+            }
+
+            if (!form.value.optOutOfPension) {
+                errors.value.optOutOfPension = 'Pension Scheme is required.';
+                valid = false;
+            } else {
+                errors.value.dbsCheck = null;
+            }
+
+            if (!form.value.medicalConditions) {
+                errors.value.medicalConditions = 'Medical Conditions information is required.';
+                valid = false;
+            } else {
+                errors.value.medicalConditions = null;
+            }
+
+            return valid;
+        }
+
         function handleSubmit() {
-            if (this.validateForm()) {
-                axios.post('/staff/registration', this.form, {
+            if (validateForm()) {
+                axios.post('/staff/registration', form.value, {
                     headers: {
                         'Accept': 'application/json',
                         'Authorization': 'Bearer ' + localStorage.getItem('token'),
@@ -370,10 +541,10 @@ export default {
                     }
                 })
                     .then(response => {
-                        this.successMessage = "Registration successful";
-                        this.resetForm();
+                        successMessage.value = "Registration successful";
+                        resetForm();
                         setTimeout(() => {
-                            this.successMessage = '';
+                            successMessage.value = '';
                         }, 3000);
                     })
                     .catch(error => {
@@ -382,23 +553,31 @@ export default {
             }
         }
 
+        
+        function resetForm() {
+            Object.keys(form.value).forEach(key => {
+                if (Array.isArray(form.value[key])) {
+                    form.value[key] = [];
+                } else {
+                    form.value[key] = '';
+                }
+            });
+        }
+
         return {
             dbsValues,
-            dbsValue,
             dropdownValues,
-            dropdownValue,
             multiselectValues,
-            multiselectValue,
             form,
             errors,
             successMessage,
+            validateForm,
             handleSubmit
         };
     }
 };
 </script>
-  
+
 <style scoped>
 /* Add your CSS styles here */
 </style>
-  

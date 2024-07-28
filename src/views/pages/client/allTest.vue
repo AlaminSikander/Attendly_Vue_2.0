@@ -114,7 +114,7 @@
                             </div>
                             <div class="field col-12 md:col-4">
                                 <label>Licence Expiry<b class="text-red-500"> *</b></label>
-                                <InputText type="text" v-model="form.licenceExpiry" />
+                                <Calendar :showIcon="true" :showButtonBar="true" v-model="form.licenceExpiry"></Calendar>
                                 <small class="p-error" v-if="errors.licenceExpiry">{{ errors.licenceExpiry }}</small>
                             </div>
                             <div class="field col-12 md:col-12">
@@ -269,6 +269,36 @@ export default {
         Textarea
     },
     setup() {
+
+        function handleImage() {
+            const selectedImage = this.$refs.staffImage.files[0];
+            form.value.image = selectedImage;
+        }
+
+        function handleDrivingLicence() {
+            const selectedDrivingLicence = this.$refs.licence.files[0];
+            form.value.drivingLicence = selectedDrivingLicence;
+        }
+
+        function handleProofOfAddress() {
+            const selectedProofOfAddress = this.$refs.staffProofOfAddress.files[0];
+            form.value.proofOfAddress = selectedProofOfAddress;
+        }
+
+        function handlePassport() {
+            const selectedPassport = this.$refs.staffPassport.files[0];
+            form.value.passport = selectedPassport;
+        }
+
+        function handleCpc() {
+            const selectedCpc = this.$refs.staffCpc.files[0];
+            form.value.cpc = selectedCpc;
+        }
+
+        function handleTacho() {
+            const selectedTacho = this.$refs.staffTacho.files[0];
+            form.value.tacho = selectedTacho;
+        }
         const dropdownValues = ref([
             { name: 'Male' },
             { name: 'Female' },
@@ -565,6 +595,12 @@ export default {
         }
 
         return {
+            handleImage,
+            handleDrivingLicence,
+            handleProofOfAddress,
+            handlePassport,
+            handleCpc,
+            handleTacho,
             dbsValues,
             dropdownValues,
             multiselectValues,
