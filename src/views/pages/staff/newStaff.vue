@@ -80,7 +80,7 @@
                             </div>
                             <div class="field col-12 md:col-4">
                                 <label>Staff Image<b class="text-red-500"> *</b></label>
-                                <InputText type="file" v-model="form.image" @change="handleImage" ref="staffImage" id="image"/>
+                                <InputText type="file" @change="handleImage" ref="staffImage" id="image" />
                                 <small class="p-error" v-if="errors.image">{{ errors.image }}</small>
                             </div>
                         </div>
@@ -114,7 +114,7 @@
                             </div>
                             <div class="field col-12 md:col-4">
                                 <label>Licence Expiry<b class="text-red-500"> *</b></label>
-                                <InputText type="text" v-model="form.licenceExpiry" />
+                                <Calendar :showIcon="true" :showButtonBar="true" v-model="form.licenceExpiry"></Calendar>
                                 <small class="p-error" v-if="errors.licenceExpiry">{{ errors.licenceExpiry }}</small>
                             </div>
                             <div class="field col-12 md:col-12">
@@ -130,8 +130,7 @@
                                 </div>
                                 <div class="col-lg-6">
                                     <input type="checkbox" class="form-check-input" id="noCpcCard" v-model="form.noCpcCard">
-                                    <label class="form-check-label" for="noCpcCard">I don’t have
-                                        one</label>
+                                    <label class="form-check-label" for="noCpcCard">I don’t have one</label>
                                 </div>
                             </div>
                             <div class="field col-12 md:col-4">
@@ -151,8 +150,7 @@
                                 <div class="col-lg-6">
                                     <input type="checkbox" class="form-check-input" id="noTachoCard"
                                         v-model="form.noTachoCard">
-                                    <label class="form-check-label" for="noTachoCard">I don’t have
-                                        one</label>
+                                    <label class="form-check-label" for="noTachoCard">I don’t have one</label>
                                 </div>
                             </div>
                             <div class="field col-12 md:col-4">
@@ -180,8 +178,7 @@
                                 <small class="p-error" v-if="errors.dbsCheck">{{ errors.dbsCheck }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label>Does he want to opt out of the Pension Scheme?<b class="text-red-500">
-                                        *</b></label>
+                                <label>Does he want to opt out of the Pension Scheme?<b class="text-red-500"> *</b></label>
                                 <Dropdown v-model="form.optOutOfPension" :options="dbsValues" optionLabel="name"
                                     placeholder="Select" />
                                 <small class="p-error" v-if="errors.optOutOfPension">{{ errors.optOutOfPension }}</small>
@@ -196,17 +193,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12">
+                <div class="col-12 ">
                     <div class="card">
                         <div class="p-fluid formgrid grid">
                             <div class="field col-12 md:col-6">
                                 <label>Upload Driving Licence<b class="text-red-500">*</b></label>
-                                <InputText type="file" v-model="form.drivingLicence" ref="licence" @change="handleDrivingLicence" id="drivingLicence"/>
+                                <InputText type="file" @change="handleDrivingLicence" ref="licence" id="drivingLicence" />
                                 <small class="p-error" v-if="errors.drivingLicence">{{ errors.drivingLicence }}</small>
                             </div>
                             <div class="field col-12 md:col-6">
                                 <label>Upload Proof of Address<b class="text-red-500">*</b></label>
-                                <InputText type="file" v-model="form.proofOfAddress" ref="staffProofOfAddress" @change="handleProofOfAddress" id="proofOfAddress"/>
+                                <InputText type="file" @change="handleProofOfAddress" ref="staffProofOfAddress"
+                                    id="proofOfAddress" />
                                 <small class="p-error" v-if="errors.proofOfAddress">{{ errors.proofOfAddress }}</small>
                             </div>
                             <div class="field col-12 md:col-4 mt-2 mb-4 custom-file">
@@ -214,8 +212,7 @@
                                     <label for="passport"><b>Upload Passport</b></label>
                                     <input type="checkbox" class="form-check-input" id="noPassport"
                                         v-model="form.noPassport">
-                                    <label class="form-check-label" for="noPassport">I don’t have
-                                        one</label>
+                                    <label class="form-check-label" for="noPassport">I don’t have one</label>
                                 </div>
                                 <InputText type="file" ref="staffPassport" @change="handlePassport"
                                     class="form-control mt-2" id="passport" :disabled="form.noPassport" />
@@ -238,7 +235,6 @@
                                 <InputText type="file" ref="staffTacho" @change="handleTacho" class="form-control mt-2"
                                     id="tacho" :disabled="form.noTacho" />
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -269,22 +265,6 @@ export default {
         Textarea
     },
     setup() {
-        const dropdownValues = ref([
-            { name: 'Male' },
-            { name: 'Female' },
-            { name: 'Other' }
-        ]);
-        const dbsValues = ref([
-            { name: 'Yes' },
-            { name: 'No' },
-        ]);
-        const multiselectValues = ref([
-            { name: 'Class B' },
-            { name: 'Class C' },
-            { name: 'Class D' },
-            { name: 'Class D1' },
-            { name: 'Class E' }
-        ]);
         const form = ref({
             first_name: '',
             last_name: '',
@@ -322,6 +302,7 @@ export default {
             noCPC: false,
             noTacho: false
         });
+
         const errors = ref({
             first_name: null,
             last_name: null,
@@ -354,12 +335,106 @@ export default {
             tacho: null,
             proofOfAddress: null
         });
+
         const successMessage = ref('');
+
+        const dropdownValues = ref([
+            { name: 'Male' },
+            { name: 'Female' },
+            { name: 'Other' }
+        ]);
+
+        const dbsValues = ref([
+            { name: 'Yes' },
+            { name: 'No' },
+        ]);
+
+        const multiselectValues = ref([
+            { name: 'Class B' },
+            { name: 'Class C' },
+            { name: 'Class D' },
+            { name: 'Class D1' },
+            { name: 'Class E' }
+        ]);
+
+        const staffImage = ref(null);
+        const licence = ref(null);
+        const staffProofOfAddress = ref(null);
+        const staffPassport = ref(null);
+        const staffCpc = ref(null);
+        const staffTacho = ref(null);
+
+        function handleImage(event) {
+            const selectedImage = event.target.files[0];
+            form.value.image = selectedImage;
+        }
+
+        function handleDrivingLicence(event) {
+            const selectedDrivingLicence = event.target.files[0];
+            form.value.drivingLicence = selectedDrivingLicence;
+        }
+
+        function handleProofOfAddress(event) {
+            const selectedProofOfAddress = event.target.files[0];
+            form.value.proofOfAddress = selectedProofOfAddress;
+        }
+
+        function handlePassport(event) {
+            const selectedPassport = event.target.files[0];
+            form.value.passport = selectedPassport;
+        }
+
+        function handleCpc(event) {
+            const selectedCpc = event.target.files[0];
+            form.value.cpc = selectedCpc;
+        }
+
+        function handleTacho(event) {
+            const selectedTacho = event.target.files[0];
+            form.value.tacho = selectedTacho;
+        }
+
+        function calculateAge(dateOfBirth) {
+            const today = new Date();
+            const birthDate = new Date(dateOfBirth);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
+
+            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+
+            return age;
+        }
 
         function validateForm() {
             let valid = true;
 
-            // Validation logic for each field
+            if (!form.value.noCpcCard) {
+                if (!form.value.cpcNumber) {
+                    errors.value.cpcNumber = 'CPC Number is required.';
+                    valid = false;
+                } else {
+                    errors.value.cpcNumber = null;
+                }
+
+                if (!form.value.cpcExpiry) {
+                    errors.value.cpcExpiry = 'CPC Expiry is required.';
+                    valid = false;
+                } else {
+                    errors.value.cpcExpiry = null;
+                }
+            }
+
+            if (!form.value.noTachoCard) {
+                if (!form.value.tachoNumber) {
+                    errors.value.tachoNumber = 'Tacho Number is required.';
+                    valid = false;
+                } else {
+                    errors.value.tachoNumber = null;
+                }
+            }
+
             if (!form.value.first_name) {
                 errors.value.first_name = 'First name is required.';
                 valid = false;
@@ -413,7 +488,7 @@ export default {
                 errors.value.addressLine2 = 'Address Line 2 is required.';
                 valid = false;
             } else {
-                errors.value.addressLine1 = null;
+                errors.value.addressLine2 = null;
             }
 
             if (!form.value.townOrCity) {
@@ -434,7 +509,13 @@ export default {
                 errors.value.dob = 'Date of Birth is required.';
                 valid = false;
             } else {
-                errors.value.dob = null;
+                const age = calculateAge(form.value.dob);
+                if (age < 18) {
+                    errors.value.dob = 'You must be at least 18 years old.';
+                    valid = false;
+                } else {
+                    errors.value.dob = null;
+                }
             }
 
             if (!form.value.ni_number) {
@@ -518,7 +599,7 @@ export default {
                 errors.value.optOutOfPension = 'Pension Scheme is required.';
                 valid = false;
             } else {
-                errors.value.dbsCheck = null;
+                errors.value.optOutOfPension = null;
             }
 
             if (!form.value.medicalConditions) {
@@ -532,6 +613,14 @@ export default {
         }
 
         function handleSubmit() {
+            // Ensure the required fields are in the correct format
+            form.value.cpcNumber = form.value.cpcNumber ? String(form.value.cpcNumber) : '';
+            form.value.cpcExpiry = form.value.cpcExpiry ? new Date(form.value.cpcExpiry).toISOString() : '';
+            form.value.tachoNumber = form.value.tachoNumber ? String(form.value.tachoNumber) : '';
+
+            // Ensure licence types are strings
+            form.value.licenceTypes = form.value.licenceTypes.map(type => String(type.name));
+
             if (validateForm()) {
                 axios.post('/staff/registration', form.value, {
                     headers: {
@@ -553,7 +642,6 @@ export default {
             }
         }
 
-        
         function resetForm() {
             Object.keys(form.value).forEach(key => {
                 if (Array.isArray(form.value[key])) {
@@ -565,6 +653,12 @@ export default {
         }
 
         return {
+            handleImage,
+            handleDrivingLicence,
+            handleProofOfAddress,
+            handlePassport,
+            handleCpc,
+            handleTacho,
             dbsValues,
             dropdownValues,
             multiselectValues,
@@ -572,12 +666,14 @@ export default {
             errors,
             successMessage,
             validateForm,
-            handleSubmit
+            handleSubmit,
+            staffImage,
+            licence,
+            staffProofOfAddress,
+            staffPassport,
+            staffCpc,
+            staffTacho
         };
     }
-};
+}
 </script>
-
-<style scoped>
-/* Add your CSS styles here */
-</style>

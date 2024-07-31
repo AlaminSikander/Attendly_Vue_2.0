@@ -27,9 +27,14 @@ const router = createRouter({
                     component: () => import('@/views/pages/client/clientList.vue')
                 },
                 {
-                    path: '/client/allTest',
+                    path: '/test/allTest',
                     name: 'allTest',
-                    component: () => import('@/views/pages/client/allTest.vue')
+                    component: () => import('@/views/pages/test/allTest.vue')
+                },
+                {
+                    path: '/test/testTwo',
+                    name: 'testTwo',
+                    component: () => import('@/views/pages/test/testTwo.vue')
                 },
                 {
                     path: '/client/newClient',
@@ -40,6 +45,11 @@ const router = createRouter({
                     path: '/staff/staffList',
                     name: 'staffList',
                     component: () => import('@/views/pages/staff/staffList.vue')
+                },
+                {
+                    path: '/staff/staffType',
+                    name: 'staffType',
+                    component: () => import('@/views/pages/staff/staffType.vue')
                 },
                 {
                     path: '/staff/newStaff',

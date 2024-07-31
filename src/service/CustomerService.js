@@ -25,4 +25,8 @@ export class CustomerService {
         return axios.get('/staff/list', { headers: { 'Cache-Control': 'no-cache' } })
         .then((res) => res.data.data.data);
     }
+    getStaffrole() {
+        return axios.get('/staff/role', { headers: { 'Cache-Control': 'no-cache' } })
+        .then((res) => res.data.user);
+    }
 }

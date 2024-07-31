@@ -13,10 +13,29 @@ const model = ref([
     {
         label: 'Pages',
         items: [
+        {
+                label: 'All test',
+                icon: 'pi pi-fw pi-user',
+                to: '/test/allTest'
+                
+            },
+        {
+                label: 'test two',
+                icon: 'pi pi-fw pi-user',
+                to: '/test/testTwo'
+                
+            },
+            
             {
                 label: 'Client',
                 icon: 'pi pi-fw pi-user',
                 to: '/client/clientList'
+                
+            },
+            {
+                label: 'Staff Type',
+                icon: 'pi pi-fw pi-user',
+                to: '/staff/staffType'
                 
             },
             {

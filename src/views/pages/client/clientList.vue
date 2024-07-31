@@ -91,11 +91,7 @@ const formatDate = (value) => {
       <Button label="Create +" rounded class="mb-2 mr-2" />
     </router-link>
   </div>
-  <div>
-    <router-link :to="{ name: 'allTest' }" class="text-light">
-      <Button label="test" rounded class="mb-2 mr-2" />
-    </router-link>
-  </div>
+  
 
 
   <div class="grid">
