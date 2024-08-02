@@ -5,13 +5,11 @@ import { CustomerService } from '@/service/CustomerService';
 
 const customer1 = ref(null);
 const filters1 = ref(null);
-const loading1 = ref(true); // Initialize loading1 as true
-const loading2 = ref(false); // Initialize loading2 as false
-
+const loading1 = ref(true);
 const customerService = new CustomerService();
 
 const form = reactive({
-    staff_type: '' // Add staff_type to the form object
+    staff_type: '' 
 });
 
 const successMessage = ref('');
@@ -25,12 +23,12 @@ function fetchCustomerData() {
     customerService.getStaffrole().then((data) => {
         customer1.value = data;
         customer1.value.forEach((customer) => (customer.date = new Date(customer.date)));
-        loading1.value = false; // Set loading1 to false after data is loaded
+        loading1.value = false; 
     });
 }
 
 function validateForm() {
-    // Check if lastname and staff_type fields are not empty
+   
     return form.staff_type !== '';
 }
 
@@ -46,7 +44,7 @@ function handleSubmit() {
         .then(response => {
             successMessage.value = "Registration successful";
             resetForm();
-            fetchCustomerData(); // Refresh the data
+            fetchCustomerData(); 
             setTimeout(() => {
                 successMessage.value = '';
             }, 3000);
@@ -67,16 +65,15 @@ function resetForm() {
 }
 
 function handleDelete(id) {
-    axios.delete(`/staff/role/delete`, {
+    axios.get(`/staff/role/delete/${id}`, {  
         headers: {
             'Accept': 'application/json',
             'Authorization': 'Bearer ' + localStorage.getItem('token'),
         },
-        data: { id } // Include the ID in the request body
     })
     .then(response => {
         successMessage.value = "Deletion successful";
-        fetchCustomerData(); // Refresh the data
+        fetchCustomerData(); 
         setTimeout(() => {
             successMessage.value = '';
         }, 3000);
@@ -95,7 +92,7 @@ function handleDelete(id) {
         <div class="card">
             <h5>Inline</h5>
             <div class="formgroup-inline field col-12 md:col-12">
-               
+                
                 <div class="field">
                     <label for="staff_type" class="p-sr-only">Staff Type</label>
                     <InputText id="staff_type" v-model="form.staff_type" type="text" placeholder="Staff Type" />

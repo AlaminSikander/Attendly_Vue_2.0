@@ -13,37 +13,102 @@ const model = ref([
     {
         label: 'Pages',
         items: [
-        {
+            {
                 label: 'All test',
                 icon: 'pi pi-fw pi-user',
                 to: '/test/allTest'
-                
+
             },
-        {
+            {
                 label: 'test two',
                 icon: 'pi pi-fw pi-user',
                 to: '/test/testTwo'
-                
+
             },
-            
+
             {
                 label: 'Client',
                 icon: 'pi pi-fw pi-user',
                 to: '/client/clientList'
-                
+
             },
             {
                 label: 'Staff Type',
                 icon: 'pi pi-fw pi-user',
                 to: '/staff/staffType'
-                
+
             },
             {
                 label: 'Staff',
                 icon: 'pi pi-fw pi-user',
                 to: '/staff/staffList'
-                
+
             },
+            {
+                label: 'Assignment',
+                icon: 'pi pi-fw pi-user',
+                to: '/assignment/currentAssignment'
+
+            },
+            {
+                label: 'Rate Type',
+                icon: 'pi pi-fw pi-user',
+                to: '/rates/rateType'
+
+            },
+            {
+                label: 'Staff Request',
+                icon: 'pi pi-fw pi-user',
+                to: '/staff/staffRequest'
+
+            },
+            {
+                label: 'Access',
+                icon: 'pi pi-fw pi-id-card',
+                items: [
+                    {
+                        label: 'Access Control',
+                        icon: 'pi pi-fw pi-user',
+                        to: '/access/accessControl'
+
+                    },
+                    {
+                        label: 'Administrator Users',
+                        icon: 'pi pi-fw pi-user',
+                        to: '/access/administratorUsers'
+
+                    },
+
+                ]
+            },
+
+            {
+                label: 'My Digital Accounts',
+                icon: 'pi pi-fw pi-id-card',
+                items: [
+                    {
+                        label: 'People',
+                        icon: 'pi pi-fw pi-sign-in',
+                        to: '/client/clientList'
+                    },
+                    {
+                        label: 'Illustration',
+                        icon: 'pi pi-fw pi-times-circle',
+                        to: '/client/newClient'
+                    },
+                    {
+                        label: 'Leave',
+                        icon: 'pi pi-fw pi-times-circle',
+                        to: '/client/newClient'
+                    },
+                    {
+                        label: 'Payslip',
+                        icon: 'pi pi-fw pi-times-circle',
+                        to: '/client/newClient'
+                    },
+                ]
+            },
+
         ]
     },
     {

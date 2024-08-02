@@ -29,4 +29,12 @@ export class CustomerService {
         return axios.get('/staff/role', { headers: { 'Cache-Control': 'no-cache' } })
         .then((res) => res.data.user);
     }
+    getAssignmentList() {
+        return axios.get('/assign/assign/list', { headers: { 'Cache-Control': 'no-cache' } })
+        .then((res) => res.data.data.data);
+    }
+    getstaffRequest() {
+        return axios.get('/staff/request', { headers: { 'Cache-Control': 'no-cache' } })
+        .then((res) => res.data.data);
+    }
 }

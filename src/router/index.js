@@ -57,6 +57,41 @@ const router = createRouter({
                     component: () => import('@/views/pages/staff/newStaff.vue')
                 },
                 {
+                    path: '/assignment/currentAssignment',
+                    name: 'currentAssignment',
+                    component: () => import('@/views/pages/assignment/currentAssignment.vue')
+                },
+                {
+                    path: '/assignment/createAssignment',
+                    name: 'createAssignment',
+                    component: () => import('@/views/pages/assignment/createAssignment.vue')
+                },
+                {
+                    path: '/rates/rateType',
+                    name: 'rateType',
+                    component: () => import('@/views/pages/rates/rateType.vue')
+                },
+                {
+                    path: '/staff/staffRequest',
+                    name: 'staffRequest',
+                    component: () => import('@/views/pages/staff/staffRequest.vue')
+                },
+                {
+                    path: '/access/accessControl',
+                    name: 'accessControl',
+                    component: () => import('@/views/pages/access/accessControl.vue')
+                },
+                {
+                    path: '/access/createAdministratorUser',
+                    name: 'createAdministratorUser',
+                    component: () => import('@/views/pages/access/createAdministratorUser.vue')
+                },
+                {
+                    path: '/access/administratorUsers',
+                    name: 'administratorUsers',
+                    component: () => import('@/views/pages/access/administratorUsers.vue')
+                },
+                {
                     path: '/uikit/input',
                     name: 'input',
                     component: () => import('@/views/uikit/Input.vue')

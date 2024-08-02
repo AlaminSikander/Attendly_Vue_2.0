@@ -17,14 +17,14 @@ const customerService = new CustomerService();
 const productService = new ProductService();
 
 const toggleStatus = (customer) => {
-    customer.status = customer.status === 'approved' ? 'disabled' : 'approved';
+    customer.status = customer.status === 'active' ? ' inActive' : 'active';
 };
 
 const getSeverity = (status) => {
     console.log("Status Received for Severity:", status); // Debug log
-    if (status.trim().toLowerCase() === 'approved') {
+    if (status.trim().toLowerCase() === 'active') {
         return 'success';
-    } else if (status.trim().toLowerCase() === 'disabled') {
+    } else if (status.trim().toLowerCase() === ' inActive') {
         return 'warning';
     } else {
         return 'error'; // Handle unexpected cases
@@ -33,7 +33,7 @@ const getSeverity = (status) => {
 
 const getStatusIcon = (status) => {
     console.log("Status Received for Icon:", status); // Debug log
-    if (status.trim().toLowerCase() === 'approved') {
+    if (status.trim().toLowerCase() === 'active') {
         return 'pi pi-times-circle';
     } else {
         return 'pi pi-check-circle';
@@ -41,45 +41,41 @@ const getStatusIcon = (status) => {
 };
 
 onBeforeMount(() => {
-    fetchCustomerData();
-    initFilters1();
-    productService.getProductsWithOrdersSmall().then(data => {
-        products.value = data;
-    });
-    customerService.getStaffList().then(data => {
+    productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
+    customerService.getAssignmentList().then((data) => {
         customer1.value = data;
         loading1.value = false;
     });
     loading2.value = false;
+
+    initFilters1();
 });
 
-function fetchCustomerData() {
-    customerService.getStaffList().then((data) => {
-        customer1.value = data.map((customer, index) => ({
-            ...customer,
-            sn: index + 1, 
-            date: new Date(customer.date)
-        }));
-        loading1.value = false; 
-    });
-}
+const formatTime = (time) => {
+    if (!time) return ''; // Return empty string if time is not provided
+    try {
+        const [hours, minutes] = time.split(':');
+        if (hours === undefined || minutes === undefined) {
+            throw new Error('Invalid time format');
+        }
+        const period = parseInt(hours, 10) >= 12 ? 'PM' : 'AM';
+        const formattedHours = parseInt(hours, 10) % 12 || 12;
+        return `${formattedHours}:${minutes} ${period}`;
+    } catch (error) {
+        console.error('Error formatting time:', error);
+        return time; // Return the original time if there's an error
+    }
+};
 
 const initFilters1 = () => {
     filters1.value = {
-        global: { value: '', matchMode: FilterMatchMode.CONTAINS },
+        global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         company_name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        user_name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        phone: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        gender: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        email: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        roleType: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        representative: { value: null, matchMode: FilterMatchMode.IN },
-        // date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
-        funding_limit: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+        assignment_number: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+        first_name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+        last_name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+        driver_id: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
         status: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
-        // activity: { value: [0, 100], matchMode: FilterMatchMode.BETWEEN },
-        // verified: { value: null, matchMode: FilterMatchMode.EQUALS }
     };
 };
 
@@ -103,11 +99,11 @@ const formatDate = (value) => {
 
 <template>
     <div>
-        <router-link :to="{ name: 'newStaff' }" class="text-light">
+        <router-link :to="{ name: 'createAssignment' }" class="text-light">
             <Button label="Create +" rounded class="mb-2 mr-2" />
         </router-link>
     </div>
-    
+
 
 
     <div class="grid">
@@ -116,58 +112,52 @@ const formatDate = (value) => {
                 <h5>Client List</h5>
                 <DataTable :value="customer1" :paginator="true" :rows="10" dataKey="id" :rowHover="true"
                     v-model:filters="filters1" filterDisplay="menu" :loading="loading1" :filters="filters1"
-                    :globalFilterFields="['name', 'first_name', 'last_name', 'email', 'first_name','user_name', 'phone', 'gender', 'roleType', 'status']"
+                    :globalFilterFields="['assignment_number', 'company_name', 'first_name', 'last_name', 'driver_id', 'status']"
                     showGridlines>
                     <template #header>
                         <div class="flex justify-content-between flex-column sm:flex-row">
                             <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined
                                 @click="clearFilter1()" />
 
-                            <!-- <IconField iconPosition="left">
+                            <IconField iconPosition="left">
                                 <InputIcon class="pi pi-search" />
                                 <InputText v-model="filters1['global'].value" placeholder="Keyword Search"
                                     style="width: 100%" />
-                            </IconField> -->
-                            <IconField iconPosition="left">
-                                <InputIcon class="pi pi-search" />
-                                <InputText v-model="filters1['global'].value" placeholder="Keyword Search" style="width: 100%" />
                             </IconField>
                         </div>
                     </template>
                     <template #empty> No client found. </template>
                     <template #loading> Loading client data. Please wait. </template>
 
-                    <Column field="sn" header="S/N" style="min-width: 4rem" />
-
-                    <Column field="name" header="Name" :sortable="true" style="min-width: 12rem">
+                    <Column field="assignment_number" header="Assignment Number" :sortable="true" style="min-width: 12rem">
                         <template #body="{ data }">
-                          <div class="flex align-items-center gap-2">
-                          <img alt="Name" :src="data.image" style="width: 32px" />
-                            <span>{{ data.first_name }} {{ data.last_name }}</span>
+                            {{ data.assignment_number }}
+                        </template>
+                        <template #filter="{ filterModel }">
+                            <InputText type="text" v-model="filterModel.value" class="p-column-filter"
+                                placeholder="Search by Assignment Number" />
+                        </template>
+                    </Column>
+
+                    <Column header="Company name" :sortable="true" filterField="representative"
+                        :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
+                        <template #body="{ data }">
+                            <div class="flex align-items-center gap-2">
+                                <img alt="Company name" :src="data.image" style="width: 32px" />
+                                <span>{{ data.clients?.company_name }}</span>
                             </div>
                         </template>
                         <template #filter="{ filterModel }">
                             <InputText type="text" v-model="filterModel.value" class="p-column-filter"
-                                placeholder="Search by Name" />
+                                placeholder="Search by Assignment Number" />
                         </template>
+
                     </Column>
 
 
-                    <Column field="email" header="Email" :sortable="true" style="min-width: 12rem">
+                    <Column  header="Staff Name" :sortable="true" style="min-width: 12rem">
                         <template #body="{ data }">
-                            {{ data.email }}
-                        </template>
-                        <template #filter="{ filterModel }">
-                            <InputText type="text" v-model="filterModel.value" class="p-column-filter"
-                                placeholder="Search by Email" />
-                        </template>
-                    </Column>
-
-
-
-                    <Column field="user_name" header="User Id" :sortable="true" style="min-width: 12rem">
-                        <template #body="{ data }">
-                            {{ data.user_name }}
+                            {{ data.drivers.first_name }} {{ data.drivers.last_name }} ({{ data.drivers.driver_id }})
                         </template>
                         <template #filter="{ filterModel }">
                             <InputText type="text" v-model="filterModel.value" class="p-column-filter"
@@ -176,40 +166,12 @@ const formatDate = (value) => {
                     </Column>
 
 
-
-                    <Column header="Phone" filterField="phone" :sortable="true" dataType="numeric"
-                        style="min-width: 10rem">
+                    <Column field="dset" header="Day Start and End Time"  style="min-width: 12rem">
                         <template #body="{ data }">
-                            {{ data.phone }}
-                        </template>
-                        <template #filter="{ filterModel }">
-                            <InputText type="text" v-model="filterModel.value" class="p-column-filter"
-                                placeholder="Search by User Id" />
+                            {{ formatTime(data.start_time) }} - {{ formatTime(data.end_time) }}
                         </template>
                     </Column>
 
-
-                    <Column header="Gender" filterField="gender" :sortable="true" dataType="numeric"
-                        style="min-width: 10rem">
-                        <template #body="{ data }">
-                            {{ data.gender }}
-                        </template>
-                        <template #filter="{ filterModel }">
-                            <InputText type="text" v-model="filterModel.value" class="p-column-filter"
-                                placeholder="Search by User Id" />
-                        </template>
-                    </Column>
-
-                    <Column header="Staff Type" filterField="roleType" :sortable="true" dataType="numeric"
-                        style="min-width: 10rem">
-                        <template #body="{ data }">
-                            {{ data.roleType }}
-                        </template>
-                        <template #filter="{ filterModel }">
-                            <InputText type="text" v-model="filterModel.value" class="p-column-filter"
-                                placeholder="Search by User Id" />
-                        </template>
-                    </Column>
 
 
                     <Column field="status" header="Status" :sortable="true">
@@ -222,15 +184,10 @@ const formatDate = (value) => {
                                     class="p-button-rounded p-button-outlined" :class="getSeverity(data.status)" />
                             </div>
                         </template>
-                        <template #filter="{ filterModel }">
-                            <InputText type="text" v-model="filterModel.value" class="p-column-filter"
-                                placeholder="Search by User Id" />
-                        </template>
                     </Column>
 
 
-               
-                    <Column header="Action" bodyClass="text-center" style="min-width: 8rem">
+                    <Column header="Rate Details" bodyClass="text-center" style="min-width: 8rem">
                         <template #body>
                             <router-link :to="{ name: 'newClient' }" class="text-light">
                                 <Button icon="pi pi-eye" severity="success" rounded outlined class="mr-2" />
@@ -240,6 +197,14 @@ const formatDate = (value) => {
                             </router-link>
                         </template>
                     </Column>
+                    <Column header="Action" bodyClass="text-center" style="min-width: 8rem">
+                        <template #body>
+                            <router-link :to="{ name: 'newClient' }" class="text-light">
+                                <Button icon="pi pi-cog" severity="success" rounded outlined class="" />
+                            </router-link>
+                        </template>
+                    </Column>
+                    
 
 
                 </DataTable>
