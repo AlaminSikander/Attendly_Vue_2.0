@@ -1,0 +1,197 @@
+<script setup>
+import { ref, onBeforeMount, reactive } from 'vue';
+import axios from 'axios';
+import { CustomerService } from '@/service/CustomerService';
+
+const customer1 = ref(null);
+const filters1 = ref(null);
+const loading1 = ref(true);
+const customerService = new CustomerService();
+
+const form = reactive({
+    staff_type: ''
+});
+
+const successMessage = ref('');
+const errorMessage = ref('');
+
+onBeforeMount(() => {
+    fetchCustomerData();
+});
+
+function fetchCustomerData() {
+    customerService.getStaffrole().then((data) => {
+        customer1.value = data.map((customer, index) => ({
+            ...customer,
+            sn: index + 1,
+            date: new Date(customer.date)
+        }));
+        loading1.value = false;
+    });
+}
+
+function validateForm() {
+
+    return form.staff_type !== '';
+}
+
+function handleSubmit() {
+    if (validateForm()) {
+        axios.post('/staff/role/create', form, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token'),
+                'Content-Type': 'application/json',
+            }
+        })
+            .then(response => {
+                successMessage.value = "Registration successful";
+                resetForm();
+                fetchCustomerData();
+                setTimeout(() => {
+                    successMessage.value = '';
+                }, 3000);
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+                if (error.response && error.response.data) {
+                    errorMessage.value = error.response.data;
+                }
+            });
+    } else {
+        errorMessage.value = 'Please fill in all required fields.';
+    }
+}
+
+function resetForm() {
+    form.staff_type = '';
+}
+
+function handleDelete(id) {
+    axios.get(`/staff/role/delete/${id}`, {
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        },
+    })
+        .then(response => {
+            successMessage.value = "Deletion successful";
+            fetchCustomerData();
+            setTimeout(() => {
+                successMessage.value = '';
+            }, 3000);
+        })
+        .catch(error => {
+            console.error('Error deleting record:', error);
+            if (error.response && error.response.data) {
+                errorMessage.value = error.response.data;
+            }
+        });
+}
+</script>
+
+<template>
+    <div class="grid col-12">
+        <div class="card">
+            <h5>Inline</h5>
+            <div class="formgroup-inline field col-12 md:col-12">
+                <div class="p-fluid formgrid grid">
+                    <div class="field">
+                        <label>Date of Birth</label>
+                        <Calendar :showIcon="true" :showButtonBar="true" v-model="form.dob"></Calendar>
+
+                    </div>
+                    <div class="field">
+                        <label>Date of Birth</label>
+                        <Calendar :showIcon="true" :showButtonBar="true" v-model="form.dob"></Calendar>
+
+                    </div>
+                    <div class="field">
+                        <label>Staff Type</label>
+                        <InputText id="staff_type" v-model="form.staff_type" type="text" placeholder="Staff Type" />
+                    </div>
+
+                </div>
+                <div v-if="successMessage">{{ successMessage }}</div>
+                <div v-if="errorMessage">{{ errorMessage }}</div>
+            </div>
+            <div class="text-center">
+                    <button class="p-button" @click="handleSubmit">Submit Registration</button>
+                </div>
+        </div>
+    </div>
+    <div class="grid">
+        <div class="col-12">
+            <div class="card">
+                <DataTable :value="customer1" :paginator="true" :rows="10" dataKey="id" :rowHover="true"
+                    filterDisplay="menu" :loading="loading1" :filters="filters1" showGridlines>
+
+                    <template #empty> No customers found. </template>
+                    <template #loading> Loading customers data. Please wait. </template>
+
+                    <Column field="peopleId" header="People Id (MDA)" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            <!-- {{ data.staff_type }} -->
+                        </template>
+                    </Column>
+                    <Column field="newBusinessAdministratorId" header="New Business Administrator Id" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            <!-- {{ data.staff_type }} -->
+                        </template>
+                    </Column>
+                    <Column field="businessId" header="Business Id" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            <!-- {{ data.staff_type }} -->
+                        </template>
+                    </Column>
+                    <Column field="payDate" header="Pay Date" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            <!-- {{ data.staff_type }} -->
+                        </template>
+                    </Column>
+                    <Column field="taxYear" header="Tax Year" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            <!-- {{ data.staff_type }} -->
+                        </template>
+                    </Column>
+                    <Column field="taxCode" header="Tax Code" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            <!-- {{ data.staff_type }} -->
+                        </template>
+                    </Column>
+                    <Column field="niCode" header="NI Code" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            <!-- {{ data.staff_type }} -->
+                        </template>
+                    </Column>
+                    <Column field="studentLoan	" header="Student Loan	" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            <!-- {{ data.staff_type }} -->
+                        </template>
+                    </Column>
+                    <Column field="postGraduateLoan	" header="Post Graduate Loan	" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            <!-- {{ data.staff_type }} -->
+                        </template>
+                    </Column>
+
+                    <Column header="Action" bodyClass="text-center" style="min-width: 8rem">
+                        <template #body="{ data }">
+                            <Button icon="pi pi-trash" severity="danger" rounded outlined @click="handleDelete(data.id)" />
+                        </template>
+                    </Column>
+                </DataTable>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style scoped lang="scss">
+:deep(.p-datatable-frozen-tbody) {
+    font-weight: bold;
+}
+
+:deep(.p-datatable-scrollable .p-frozen-column) {
+    font-weight: bold;
+}
+</style>

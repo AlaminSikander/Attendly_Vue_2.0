@@ -350,11 +350,11 @@ export default {
         ]);
 
         const multiselectValues = ref([
-            { name: 'Class B' },
-            { name: 'Class C' },
-            { name: 'Class D' },
-            { name: 'Class D1' },
-            { name: 'Class E' }
+            { name: 'ClassB' },
+            { name: 'ClassC' },
+            { name: 'ClassD' },
+            { name: 'ClassD1' },
+            { name: 'ClassE' }
         ]);
 
         const staffImage = ref(null);

@@ -89,22 +89,22 @@ const model = ref([
                     {
                         label: 'People',
                         icon: 'pi pi-fw pi-sign-in',
-                        to: '/client/clientList'
+                        to: '/myDigitalAccounts/people'
                     },
                     {
                         label: 'Illustration',
                         icon: 'pi pi-fw pi-times-circle',
-                        to: '/client/newClient'
+                        to: '/myDigitalAccounts/illustration'
                     },
                     {
                         label: 'Leave',
                         icon: 'pi pi-fw pi-times-circle',
-                        to: '/client/newClient'
+                        to: '/myDigitalAccounts/leave'
                     },
                     {
                         label: 'Payslip',
                         icon: 'pi pi-fw pi-times-circle',
-                        to: '/client/newClient'
+                        to: '/myDigitalAccounts/payslip'
                     },
                 ]
             },

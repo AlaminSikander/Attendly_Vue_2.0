@@ -92,6 +92,26 @@ const router = createRouter({
                     component: () => import('@/views/pages/access/administratorUsers.vue')
                 },
                 {
+                    path: '/myDigitalAccounts/people',
+                    name: 'people',
+                    component: () => import('@/views/pages/myDigitalAccounts/people.vue')
+                },
+                {
+                    path: '/myDigitalAccounts/illustration',
+                    name: 'illustration',
+                    component: () => import('@/views/pages/myDigitalAccounts/illustration.vue')
+                },
+                {
+                    path: '/myDigitalAccounts/leave',
+                    name: 'leave',
+                    component: () => import('@/views/pages/myDigitalAccounts/leave.vue')
+                },
+                {
+                    path: '/myDigitalAccounts/payslip',
+                    name: 'payslip',
+                    component: () => import('@/views/pages/myDigitalAccounts/payslip.vue')
+                },
+                {
                     path: '/uikit/input',
                     name: 'input',
                     component: () => import('@/views/uikit/Input.vue')
