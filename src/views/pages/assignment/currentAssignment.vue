@@ -1,38 +1,35 @@
 <script setup>
-import { ref, onBeforeMount, reactive, computed } from 'vue';
+import { ref, onBeforeMount } from 'vue';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { CustomerService } from '@/service/CustomerService';
 import { ProductService } from '@/service/ProductService';
 
-const customer1 = ref(null);
-const customer2 = ref(null);
-const customer3 = ref(null);
+const customer1 = ref([]);
 const filters1 = ref(null);
-const loading1 = ref(null);
-const loading2 = ref(null);
+const loading1 = ref(true);
+const loading2 = ref(true);
 const products = ref(null);
-const statuses = reactive(['unqualified', 'qualified', 'new', 'negotiation', 'renewal', 'proposal']);
 
 const customerService = new CustomerService();
 const productService = new ProductService();
 
 const toggleStatus = (customer) => {
-    customer.status = customer.status === 'active' ? ' inActive' : 'active';
+    customer.status = customer.status === 'active' ? 'inActive' : 'active';
 };
 
 const getSeverity = (status) => {
-    console.log("Status Received for Severity:", status); // Debug log
+    console.log("Status Received for Severity:", status);
     if (status.trim().toLowerCase() === 'active') {
         return 'success';
-    } else if (status.trim().toLowerCase() === ' inActive') {
+    } else if (status.trim().toLowerCase() === 'inactive') {
         return 'warning';
     } else {
-        return 'error'; // Handle unexpected cases
+        return 'error';
     }
 };
 
 const getStatusIcon = (status) => {
-    console.log("Status Received for Icon:", status); // Debug log
+    console.log("Status Received for Icon:", status);
     if (status.trim().toLowerCase() === 'active') {
         return 'pi pi-times-circle';
     } else {
@@ -43,7 +40,13 @@ const getStatusIcon = (status) => {
 onBeforeMount(() => {
     productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
     customerService.getAssignmentList().then((data) => {
-        customer1.value = data;
+        customer1.value = data.map((customer, index) => ({
+            ...customer,
+            sn: index + 1,
+            company_name: customer.clients?.company_name || '',
+            driver_id: customer.drivers?.driver_id || '',
+            full_name: `${customer.drivers?.first_name || ''} ${customer.drivers?.last_name || ''}`
+        }));
         loading1.value = false;
     });
     loading2.value = false;
@@ -52,7 +55,7 @@ onBeforeMount(() => {
 });
 
 const formatTime = (time) => {
-    if (!time) return ''; // Return empty string if time is not provided
+    if (!time) return '';
     try {
         const [hours, minutes] = time.split(':');
         if (hours === undefined || minutes === undefined) {
@@ -63,7 +66,7 @@ const formatTime = (time) => {
         return `${formattedHours}:${minutes} ${period}`;
     } catch (error) {
         console.error('Error formatting time:', error);
-        return time; // Return the original time if there's an error
+        return time;
     }
 };
 
@@ -72,8 +75,7 @@ const initFilters1 = () => {
         global: { value: null, matchMode: FilterMatchMode.CONTAINS },
         company_name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
         assignment_number: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        first_name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
-        last_name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+        full_name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.CONTAINS }] },
         driver_id: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
         status: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
     };
@@ -82,21 +84,8 @@ const initFilters1 = () => {
 const clearFilter1 = () => {
     initFilters1();
 };
-const formatCurrency = (value) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-};
-
-const formatDate = (value) => {
-    return value.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
-};
-
 
 </script>
-
 <template>
     <div>
         <router-link :to="{ name: 'createAssignment' }" class="text-light">
@@ -104,21 +93,18 @@ const formatDate = (value) => {
         </router-link>
     </div>
 
-
-
     <div class="grid">
         <div class="col-12">
             <div class="card">
-                <h5>Client List</h5>
+                <h5>Staff assign List</h5>
                 <DataTable :value="customer1" :paginator="true" :rows="10" dataKey="id" :rowHover="true"
                     v-model:filters="filters1" filterDisplay="menu" :loading="loading1" :filters="filters1"
-                    :globalFilterFields="['assignment_number', 'company_name', 'first_name', 'last_name', 'driver_id', 'status']"
+                    :globalFilterFields="['assignment_number', 'company_name', 'full_name', 'driver_id', 'status']"
                     showGridlines>
                     <template #header>
                         <div class="flex justify-content-between flex-column sm:flex-row">
                             <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined
                                 @click="clearFilter1()" />
-
                             <IconField iconPosition="left">
                                 <InputIcon class="pi pi-search" />
                                 <InputText v-model="filters1['global'].value" placeholder="Keyword Search"
@@ -127,7 +113,16 @@ const formatDate = (value) => {
                         </div>
                     </template>
                     <template #empty> No client found. </template>
-                    <template #loading> Loading client data. Please wait. </template>
+                    <!-- <template #loading> Loading client data. Please wait. </template> -->
+
+                    <template #loading>
+                        <div class="loading-container">
+                            <i class="pi pi-spinner pi-spin"></i>
+                            Loading client data. Please wait...
+                        </div>
+                    </template>
+
+                    <Column field="sn" header="S/N" style="min-width: 4rem" />
 
                     <Column field="assignment_number" header="Assignment Number" :sortable="true" style="min-width: 12rem">
                         <template #body="{ data }">
@@ -139,40 +134,35 @@ const formatDate = (value) => {
                         </template>
                     </Column>
 
-                    <Column header="Company name" :sortable="true" filterField="representative"
-                        :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
+                    <Column field="company_name" header="Company name" :sortable="true" :showFilterMatchModes="false"
+                        :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
                         <template #body="{ data }">
                             <div class="flex align-items-center gap-2">
                                 <img alt="Company name" :src="data.image" style="width: 32px" />
-                                <span>{{ data.clients?.company_name }}</span>
+                                <span>{{ data.company_name }}</span>
                             </div>
                         </template>
                         <template #filter="{ filterModel }">
                             <InputText type="text" v-model="filterModel.value" class="p-column-filter"
-                                placeholder="Search by Assignment Number" />
+                                placeholder="Search by Company Name" />
                         </template>
-
                     </Column>
 
-
-                    <Column  header="Staff Name" :sortable="true" style="min-width: 12rem">
+                    <Column field="full_name" header="Staff Name" :sortable="true" style="min-width: 12rem">
                         <template #body="{ data }">
-                            {{ data.drivers.first_name }} {{ data.drivers.last_name }} ({{ data.drivers.driver_id }})
+                            {{ data.full_name }} ({{ data.driver_id }})
                         </template>
                         <template #filter="{ filterModel }">
                             <InputText type="text" v-model="filterModel.value" class="p-column-filter"
-                                placeholder="Search by User Id" />
+                                placeholder="Search by Staff Name" />
                         </template>
                     </Column>
 
-
-                    <Column field="dset" header="Day Start and End Time"  style="min-width: 12rem">
+                    <Column field="dset" header="Day Start and End Time" style="min-width: 12rem">
                         <template #body="{ data }">
                             {{ formatTime(data.start_time) }} - {{ formatTime(data.end_time) }}
                         </template>
                     </Column>
-
-
 
                     <Column field="status" header="Status" :sortable="true">
                         <template #body="{ data }">
@@ -186,7 +176,6 @@ const formatDate = (value) => {
                         </template>
                     </Column>
 
-
                     <Column header="Rate Details" bodyClass="text-center" style="min-width: 8rem">
                         <template #body>
                             <router-link :to="{ name: 'newClient' }" class="text-light">
@@ -197,6 +186,7 @@ const formatDate = (value) => {
                             </router-link>
                         </template>
                     </Column>
+
                     <Column header="Action" bodyClass="text-center" style="min-width: 8rem">
                         <template #body>
                             <router-link :to="{ name: 'newClient' }" class="text-light">
@@ -204,9 +194,6 @@ const formatDate = (value) => {
                             </router-link>
                         </template>
                     </Column>
-                    
-
-
                 </DataTable>
             </div>
         </div>
@@ -214,6 +201,23 @@ const formatDate = (value) => {
 </template>
 
 <style scoped lang="scss">
+
+/* Loading State Styling */
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    font-size: 1.5rem;
+    color: #ffffff; /* Customize this color */
+    font-weight: bold;
+}
+
+.pi-spinner {
+    margin-right: 10px;
+    font-size: 2rem;
+}
+
 :deep(.p-datatable-frozen-tbody) {
     font-weight: bold;
 }
@@ -223,7 +227,7 @@ const formatDate = (value) => {
 }
 
 :deep(.tag i) {
-    margin-right: 5px; // Add some spacing between the icon and the text
+    margin-right: 5px;
 }
 
 .status-tag {
@@ -254,4 +258,5 @@ const formatDate = (value) => {
 .Tag.warning {
     background-color: orange;
     color: white;
-}</style>
+}
+</style>

@@ -9,7 +9,7 @@ const loading1 = ref(true);
 const customerService = new CustomerService();
 
 const form = reactive({
-    staff_type: '' 
+    staff_type: ''
 });
 
 const successMessage = ref('');
@@ -30,8 +30,9 @@ function fetchCustomerData() {
     });
 }
 
+
 function validateForm() {
-   
+
     return form.staff_type !== '';
 }
 
@@ -44,20 +45,20 @@ function handleSubmit() {
                 'Content-Type': 'application/json',
             }
         })
-        .then(response => {
-            successMessage.value = "Registration successful";
-            resetForm();
-            fetchCustomerData(); 
-            setTimeout(() => {
-                successMessage.value = '';
-            }, 3000);
-        })
-        .catch(error => {
-            console.error('Error submitting form:', error);
-            if (error.response && error.response.data) {
-                errorMessage.value = error.response.data;
-            }
-        });
+            .then(response => {
+                successMessage.value = "Rate Type added successful";
+                resetForm();
+                fetchCustomerData();
+                setTimeout(() => {
+                    successMessage.value = '';
+                }, 3000);
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+                if (error.response && error.response.data) {
+                    errorMessage.value = error.response.data;
+                }
+            });
     } else {
         errorMessage.value = 'Please fill in all required fields.';
     }
@@ -68,51 +69,50 @@ function resetForm() {
 }
 
 function handleDelete(id) {
-    axios.get(`/staff/role/delete/${id}`, {  
+    axios.get(`/staff/role/delete/${id}`, {
         headers: {
             'Accept': 'application/json',
             'Authorization': 'Bearer ' + localStorage.getItem('token'),
         },
     })
-    .then(response => {
-        successMessage.value = "Deletion successful";
-        fetchCustomerData(); 
-        setTimeout(() => {
-            successMessage.value = '';
-        }, 3000);
-    })
-    .catch(error => {
-        console.error('Error deleting record:', error);
-        if (error.response && error.response.data) {
-            errorMessage.value = error.response.data;
-        }
-    });
+        .then(response => {
+            successMessage.value = "Deletion successful";
+            fetchCustomerData();
+            setTimeout(() => {
+                successMessage.value = '';
+            }, 3000);
+        })
+        .catch(error => {
+            console.error('Error deleting record:', error);
+            if (error.response && error.response.data) {
+                errorMessage.value = error.response.data;
+            }
+        });
 }
 </script>
 
 <template>
     <div class="grid col-12">
         <div class="card">
-            <h5>Inline</h5>
+            <h5>Create Staff Role</h5>
             <div class="formgroup-inline field col-12 md:col-12">
-                
+
                 <div class="field">
-                    <label for="staff_type" class="p-sr-only">Staff Type</label>
-                    <InputText id="staff_type" v-model="form.staff_type" type="text" placeholder="Staff Type" />
+                    <label for="staff_type" class="p-sr-only">Staff Role Type</label>
+                    <InputText id="staff_type" v-model="form.staff_type" type="text" placeholder="Enter Staff Role Type" />
                 </div>
                 <Button label="Submit" @click="handleSubmit"></Button>
-                <div v-if="successMessage">{{ successMessage }}</div>
-                <div v-if="errorMessage">{{ errorMessage }}</div>
             </div>
+            <div v-if="successMessage">{{ successMessage }}</div>
+            <div v-if="errorMessage">{{ errorMessage }}</div>
         </div>
     </div>
     <div class="grid">
         <div class="col-12">
             <div class="card">
                 <DataTable :value="customer1" :paginator="true" :rows="10" dataKey="id" :rowHover="true"
-                    filterDisplay="menu" :loading="loading1" :filters="filters1"
-                    showGridlines>
-                    
+                    filterDisplay="menu" :loading="loading1" :filters="filters1" showGridlines>
+
                     <template #empty> No customers found. </template>
                     <template #loading> Loading customers data. Please wait. </template>
                     <Column field="sn" header="S/N" style="min-width: 4rem" />

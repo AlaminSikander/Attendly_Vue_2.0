@@ -5,13 +5,11 @@ import { CustomerService } from '@/service/CustomerService';
 
 const customer1 = ref(null);
 const filters1 = ref(null);
-const loading1 = ref(true); // Initialize loading1 as true
-const loading2 = ref(false); // Initialize loading2 as false
-
+const loading1 = ref(true);
 const customerService = new CustomerService();
 
 const form = reactive({
-    staff_type: '' // Add staff_type to the form object
+    staff_type: ''
 });
 
 const successMessage = ref('');
@@ -22,17 +20,19 @@ onBeforeMount(() => {
 });
 
 function fetchCustomerData() {
-    customerService.getStaffrole().then((data) => {
+    customerService.getRateTypes().then((data) => {
         customer1.value = data.map((customer, index) => ({
             ...customer,
-            sn: index + 1, // Add the serial number field
+            sn: index + 1, 
             date: new Date(customer.date)
         }));
-        loading1.value = false; // Set loading1 to false after data is loaded
+        loading1.value = false; 
     });
 }
 
+
 function validateForm() {
+
     return form.staff_type !== '';
 }
 
@@ -46,9 +46,9 @@ function handleSubmit() {
             }
         })
             .then(response => {
-                successMessage.value = "Registration successful";
+                successMessage.value = "Rate Type added successful";
                 resetForm();
-                fetchCustomerData(); // Refresh the data
+                fetchCustomerData();
                 setTimeout(() => {
                     successMessage.value = '';
                 }, 3000);
@@ -67,16 +67,39 @@ function handleSubmit() {
 function resetForm() {
     form.staff_type = '';
 }
+
+function handleDelete(id) {
+    axios.get(`/staff/role/delete/${id}`, {
+        headers: {
+            'Accept': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        },
+    })
+        .then(response => {
+            successMessage.value = "Deletion successful";
+            fetchCustomerData();
+            setTimeout(() => {
+                successMessage.value = '';
+            }, 3000);
+        })
+        .catch(error => {
+            console.error('Error deleting record:', error);
+            if (error.response && error.response.data) {
+                errorMessage.value = error.response.data;
+            }
+        });
+}
 </script>
 
 <template>
     <div class="grid col-12">
         <div class="card">
-            <h5>Inline</h5>
+            <h5>Create Staff Role</h5>
             <div class="formgroup-inline field col-12 md:col-12">
+
                 <div class="field">
-                    <label for="staff_type" class="p-sr-only">Staff Type</label>
-                    <InputText id="staff_type" v-model="form.staff_type" type="text" placeholder="Staff Type" />
+                    <label for="staff_type" class="p-sr-only">Staff Role Type</label>
+                    <InputText id="staff_type" v-model="form.staff_type" type="text" placeholder="Enter Staff Role Type" />
                 </div>
                 <Button label="Submit" @click="handleSubmit"></Button>
             </div>
@@ -92,14 +115,34 @@ function resetForm() {
                     <template #empty> No customers found. </template>
                     <template #loading> Loading customers data. Please wait. </template>
                     <Column field="sn" header="S/N" style="min-width: 4rem" />
-                    <Column field="staffRole" header="Staff Role" style="min-width: 12rem">
+                    <Column field="companyName" header="Company Name" style="min-width: 12rem">
                         <template #body="{ data }">
-                            {{ data.staff_type }}
+                            {{ data.clients?.company_name }}
+                        </template>
+                    </Column>
+                    <Column field="dayTypes" header="Day Types" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            {{ data.days_name }}
+                        </template>
+                    </Column>
+                    <Column field="date" header="date" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            {{ data.date }}
+                        </template>
+                    </Column>
+                    <Column field="chargeRate" header="Charge Rate" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            {{ data.days_hour_salary }}
+                        </template>
+                    </Column>
+                    <Column field="payRate" header="Pay Rate" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            {{ data.pay_hour_salary }}
                         </template>
                     </Column>
                     <Column header="Action" bodyClass="text-center" style="min-width: 8rem">
                         <template #body>
-                            <Button icon="pi pi-trash" severity="danger" rounded outlined />
+                            <Button icon="pi pi-file-edit" severity="danger" rounded outlined />
                         </template>
                     </Column>
                 </DataTable>

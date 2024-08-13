@@ -350,11 +350,11 @@ export default {
         ]);
 
         const multiselectValues = ref([
-            { name: 'ClassB' },
-            { name: 'ClassC' },
-            { name: 'ClassD' },
-            { name: 'ClassD1' },
-            { name: 'ClassE' }
+            { name: 'classB', label: 'Class B' },
+            { name: 'classC', label: 'Class C' },
+            { name: 'classD', label: 'Class D' },
+            { name: 'classD1', label: 'Class D1' },
+            { name: 'classE', label: 'Class E' }
         ]);
 
         const staffImage = ref(null);
@@ -619,7 +619,7 @@ export default {
             form.value.tachoNumber = form.value.tachoNumber ? String(form.value.tachoNumber) : '';
 
             // Ensure licence types are strings
-            form.value.licenceTypes = form.value.licenceTypes.map(type => String(type.name));
+            form.value.licenceTypes = form.value.licenceTypes.map(type => type.name);
 
             if (validateForm()) {
                 axios.post('/staff/registration', form.value, {

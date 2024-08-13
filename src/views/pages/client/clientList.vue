@@ -17,33 +17,36 @@ const customerService = new CustomerService();
 const productService = new ProductService();
 
 const toggleStatus = (customer) => {
-    customer.status = customer.status === 'approved' ? 'pending' : 'approved';
+  customer.status = customer.status === 'approved' ? 'pending' : 'approved';
 };
 
 const getSeverity = (status) => {
-    console.log("Status Received for Severity:", status); // Debug log
-    if (status.trim().toLowerCase() === 'approved') {
-        return 'success';
-    } else if (status.trim().toLowerCase() === 'pending') {
-        return 'warning';
-    } else {
-        return 'error'; // Handle unexpected cases
-    }
+  console.log("Status Received for Severity:", status); // Debug log
+  if (status.trim().toLowerCase() === 'approved') {
+    return 'success';
+  } else if (status.trim().toLowerCase() === 'pending') {
+    return 'warning';
+  } else {
+    return 'error'; // Handle unexpected cases
+  }
 };
 
 const getStatusIcon = (status) => {
-    console.log("Status Received for Icon:", status); // Debug log
-    if (status.trim().toLowerCase() === 'approved') {
-        return 'pi pi-times-circle';
-    } else {
-        return 'pi pi-check-circle';
-    }
+  console.log("Status Received for Icon:", status); // Debug log
+  if (status.trim().toLowerCase() === 'approved') {
+    return 'pi pi-times-circle';
+  } else {
+    return 'pi pi-check-circle';
+  }
 };
 
 onBeforeMount(() => {
   productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
   customerService.getClientList().then((data) => {
-    customer1.value = data;
+    customer1.value = data.map((customer, index) => ({
+      ...customer,
+      sn: index + 1,
+    }));
     loading1.value = false;
   });
   loading2.value = false;
@@ -91,7 +94,7 @@ const formatDate = (value) => {
       <Button label="Create +" rounded class="mb-2 mr-2" />
     </router-link>
   </div>
-  
+
 
 
   <div class="grid">
@@ -100,7 +103,7 @@ const formatDate = (value) => {
         <h5>Client List</h5>
         <DataTable :value="customer1" :paginator="true" :rows="10" dataKey="id" :rowHover="true"
           v-model:filters="filters1" filterDisplay="menu" :loading="loading1" :filters="filters1"
-          :globalFilterFields="['name' , 'company_name', 'user_name', 'email', 'funding_limit', 'status']" showGridlines>
+          :globalFilterFields="['name', 'company_name', 'user_name', 'email', 'funding_limit', 'status']" showGridlines>
           <template #header>
             <div class="flex justify-content-between flex-column sm:flex-row">
               <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined @click="clearFilter1()" />
@@ -125,7 +128,7 @@ const formatDate = (value) => {
           <!-- <Column field="id" header="Id" :sortable="true" :frozen="idFrozen"></Column> -->
 
 
-
+          <Column field="sn" header="S/N" style="min-width: 4rem" />
           <Column header="Company name" :sortable="true" filterField="representative" :showFilterMatchModes="false"
             :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
             <template #body="{ data }">
@@ -134,7 +137,7 @@ const formatDate = (value) => {
                 <span>{{ data.company_name }}</span>
               </div>
             </template>
-            
+
           </Column>
 
 
@@ -181,26 +184,20 @@ const formatDate = (value) => {
 
 
           <Column field="status" header="Status" :sortable="true">
-                        <template #body="{ data }">
-                            <div class="status-tag">
-                                <Tag :severity="getSeverity(data.status)" class="status-label">
-                                    {{ data.status.toUpperCase() }}
-                                </Tag>
-                                <Button :icon="getStatusIcon(data.status)" @click="toggleStatus(data)"
-                                    class="p-button-rounded p-button-outlined" :class="getSeverity(data.status)" />
-                            </div>
-                        </template>
-                    </Column>
-
-
-          <Column header="Action" bodyClass="text-center" style="min-width: 8rem">
-            <template #body>
-              <router-link :to="{ name: 'newClient' }" class="text-light">
-                <Button label="Create" rounded />
-              </router-link>
+            <template #body="{ data }">
+              <div class="status-tag">
+                <Tag :severity="getSeverity(data.status)" class="status-label">
+                  {{ data.status.toUpperCase() }}
+                </Tag>
+                <Button :icon="getStatusIcon(data.status)" @click="toggleStatus(data)"
+                  class="p-button-rounded p-button-outlined" :class="getSeverity(data.status)" />
+              </div>
             </template>
           </Column>
-          <Column header="Action" bodyClass="text-center" style="min-width: 8rem">
+
+
+          
+          <Column header="Rate Details" bodyClass="text-center" style="min-width: 8rem">
             <template #body>
               <router-link :to="{ name: 'newClient' }" class="text-light">
                 <Button icon="pi pi-file-edit" severity="success" rounded outlined class="" />
@@ -213,7 +210,17 @@ const formatDate = (value) => {
                 <Button icon="pi pi-eye" severity="success" rounded outlined class="mr-2" />
               </router-link>
               <router-link :to="{ name: 'newClient' }" class="text-light">
-                <Button icon="pi pi-file-edit" severity="success" rounded outlined class="" />
+                <Button icon="pi pi-calendar" severity="success" rounded outlined class="" />
+              </router-link>
+              <router-link :to="{ name: 'newClient' }" class="text-light">
+                <Button icon="pi pi-cog" severity="success" rounded outlined class="" />
+              </router-link>
+            </template>
+          </Column>
+          <Column header="Bulk Actions" bodyClass="text-center" style="min-width: 8rem">
+            <template #body>
+              <router-link :to="{ name: 'newClient' }" class="text-light">
+                <Button icon="pi pi-table" severity="success" rounded outlined class="" />
               </router-link>
             </template>
           </Column>
@@ -237,33 +244,34 @@ const formatDate = (value) => {
 :deep(.tag i) {
   margin-right: 5px; // Add some spacing between the icon and the text
 }
+
 .status-tag {
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .status-label {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 .p-button-outlined.success {
-    border-color: orange;
-    color: orange;
+  border-color: orange;
+  color: orange;
 }
 
 .p-button-outlined.warning {
-    border-color: green;
-    color: green;
+  border-color: green;
+  color: green;
 }
 
 .Tag.success {
-    background-color: green;
-    color: white;
+  background-color: green;
+  color: white;
 }
 
 .Tag.warning {
-    background-color: orange;
-    color: white;
+  background-color: orange;
+  color: white;
 }
 </style>

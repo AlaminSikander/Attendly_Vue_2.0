@@ -113,7 +113,7 @@ const formatDate = (value) => {
     <div class="grid">
         <div class="col-12">
             <div class="card">
-                <h5>Client List</h5>
+                <h5>Staff List</h5>
                 <DataTable :value="customer1" :paginator="true" :rows="10" dataKey="id" :rowHover="true"
                     v-model:filters="filters1" filterDisplay="menu" :loading="loading1" :filters="filters1"
                     :globalFilterFields="['name', 'first_name', 'last_name', 'email', 'first_name','user_name', 'phone', 'gender', 'roleType', 'status']"

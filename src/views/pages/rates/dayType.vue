@@ -83,21 +83,12 @@ function validateForm() {
         }
     }
 
-    if (form.value.radioValue === null) {
-        errors.value.radioValue = 'Day or Night selection is required';
-    } else {
-        delete errors.value.radioValue;
-    }
-
     return Object.keys(errors.value).length === 0;
 }
 
 function handleSubmit() {
     if (validateForm()) {
-        axios.post('/category/day/type', {
-            ...form.value,
-            dayOrNight: form.value.radioValue
-        }, {
+        axios.post('/category/day/type', form.value, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem('token'),

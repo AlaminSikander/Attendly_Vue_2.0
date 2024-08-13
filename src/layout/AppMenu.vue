@@ -33,17 +33,31 @@ const model = ref([
 
             },
             {
-                label: 'Staff Type',
-                icon: 'pi pi-fw pi-user',
-                to: '/staff/staffType'
-
-            },
-            {
                 label: 'Staff',
-                icon: 'pi pi-fw pi-user',
-                to: '/staff/staffList'
+                icon: 'pi pi-fw pi-id-card',
+                items: [
+                    {
+                        label: 'Staff List',
+                        icon: 'pi pi-fw pi-list',
+                        to: '/staff/staffList'
 
+                    },
+                    {
+                        label: 'Staff Type',
+                        icon: 'pi pi-fw pi-user',
+                        to: '/staff/staffType'
+
+                    },
+                    {
+                        label: 'Staff Request',
+                        icon: 'pi pi-fw pi-user-plus',
+                        to: '/staff/staffRequest'
+
+                    },
+
+                ]
             },
+
             {
                 label: 'Assignment',
                 icon: 'pi pi-fw pi-user',
@@ -51,16 +65,21 @@ const model = ref([
 
             },
             {
-                label: 'Rate Type',
-                icon: 'pi pi-fw pi-user',
-                to: '/rates/rateType'
+                label: 'Rates',
+                icon: 'pi pi-fw pi-calendar',
+                items: [
+                    {
+                        label: 'Rate Type',
+                        icon: 'pi pi-fw pi-user',
+                        to: '/rates/rateType'
+                    },
+                    {
+                        label: 'Day Type',
+                        icon: 'pi pi-fw pi-user',
+                        to: '/rates/dayType'
+                    },
 
-            },
-            {
-                label: 'Staff Request',
-                icon: 'pi pi-fw pi-user',
-                to: '/staff/staffRequest'
-
+                ]
             },
             {
                 label: 'Access',
@@ -103,7 +122,7 @@ const model = ref([
                     },
                     {
                         label: 'Payslip',
-                        icon: 'pi pi-fw pi-times-circle',
+                        icon: 'pi pi-fw pi-wallet',
                         to: '/myDigitalAccounts/payslip'
                     },
                 ]

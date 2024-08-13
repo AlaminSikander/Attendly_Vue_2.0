@@ -72,6 +72,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/rates/rateType.vue')
                 },
                 {
+                    path: '/rates/dayType',
+                    name: 'dayType',
+                    component: () => import('@/views/pages/rates/dayType.vue')
+                },
+                {
                     path: '/staff/staffRequest',
                     name: 'staffRequest',
                     component: () => import('@/views/pages/staff/staffRequest.vue')
