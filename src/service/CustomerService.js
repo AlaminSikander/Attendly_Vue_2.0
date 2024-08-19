@@ -31,7 +31,7 @@ export class CustomerService {
     }
     getAssignmentList() {
         return axios.get('/assign/assign/list', { headers: { 'Cache-Control': 'no-cache' } })
-        .then((res) => res.data.data.data);
+        .then((res) => res.data.data);
     }
     getstaffRequest() {
         return axios.get('/staff/request', { headers: { 'Cache-Control': 'no-cache' } })
@@ -39,27 +39,12 @@ export class CustomerService {
     }
     getRateTypes() {
         return axios.get('/rate/type/index', { headers: { 'Cache-Control': 'no-cache' } })
-        .then((res) => res.data.data.data);
+        .then((res) => res.data.data);
     }
     getDayTypes() {
-        return axios.get('/category/day/index?page=${page}', { headers: { 'Cache-Control': 'no-cache' } })
-        .then((res) => res.data.data.data);
+        return axios.get('/category/day/index', { headers: { 'Cache-Control': 'no-cache' } })
+        .then((res) => res.data.data);
     }
-
-    // getDayTypes(page = 1) {
-    //     return axios.get(`/category/day/index?page=${page}`, {
-    //         headers: {
-    //             'Authorization': 'Bearer ' + localStorage.getItem('token'),
-    //         }
-    //     }).then(response => {
-    //         // Check the structure of the response
-    //         if (response.data && Array.isArray(response.data.data)) {
-    //             return response.data;  // Assuming the response has a `data` field with an array
-    //         } else {
-    //             throw new Error('Unexpected API response structure');
-    //         }
-    //     });
-    // }
 
 
 }

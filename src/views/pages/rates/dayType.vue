@@ -83,12 +83,21 @@ function validateForm() {
         }
     }
 
+    if (form.value.radioValue === null) {
+        errors.value.radioValue = 'Day or Night selection is required';
+    } else {
+        delete errors.value.radioValue;
+    }
+
     return Object.keys(errors.value).length === 0;
 }
 
 function handleSubmit() {
     if (validateForm()) {
-        axios.post('/category/day/type', form.value, {
+        axios.post('/category/day/type', {
+            ...form.value,
+            dayOrNight: form.value.radioValue
+        }, {
             headers: {
                 'Accept': 'application/json',
                 'Authorization': 'Bearer ' + localStorage.getItem('token'),
@@ -209,7 +218,13 @@ function handleDelete(id) {
                 <DataTable :value="customer1" :paginator="true" :rows="10" dataKey="id" :rowHover="true"
                     filterDisplay="menu" :loading="loading1" :filters="filters1" showGridlines>
                     <template #empty> No customers found. </template>
-                    <template #loading> Loading customers data. Please wait. </template>
+                    <!-- <template #loading> Loading customers data. Please wait. </template> -->
+                    <template #loading>
+                        <div class="loading-container">
+                            <i class="pi pi-spinner pi-spin"></i>
+                            Loading client data. Please wait...
+                        </div>
+                    </template>
                     <Column field="sn" header="S/N" style="min-width: 4rem" />
                     <Column field="companyName" header="Day Type Name" style="min-width: 12rem">
                         <template #body="{ data }">
@@ -238,6 +253,24 @@ function handleDelete(id) {
 </template>
 
 <style scoped lang="scss">
+
+
+/* Loading State Styling */
+.loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    font-size: 1.5rem;
+    color: #ffffff; /* Customize this color */
+    font-weight: bold;
+}
+
+.pi-spinner {
+    margin-right: 10px;
+    font-size: 2rem;
+}
+
 :deep(.p-datatable-frozen-tbody) {
     font-weight: bold;
 }

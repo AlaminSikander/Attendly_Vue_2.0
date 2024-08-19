@@ -18,7 +18,7 @@ const toggleStatus = (customer) => {
 };
 
 const getSeverity = (status) => {
-    console.log("Status Received for Severity:", status);
+    // console.log("Status Received for Severity:", status);
     if (status.trim().toLowerCase() === 'active') {
         return 'success';
     } else if (status.trim().toLowerCase() === 'inactive') {
@@ -29,7 +29,7 @@ const getSeverity = (status) => {
 };
 
 const getStatusIcon = (status) => {
-    console.log("Status Received for Icon:", status);
+    // console.log("Status Received for Icon:", status);
     if (status.trim().toLowerCase() === 'active') {
         return 'pi pi-times-circle';
     } else {

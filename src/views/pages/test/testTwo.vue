@@ -1,243 +1,224 @@
 <script setup>
-import { ref, onBeforeMount } from 'vue';
-import axios from 'axios';
+import { ref, onBeforeMount, reactive, computed } from 'vue';
+import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { CustomerService } from '@/service/CustomerService';
-import Dropdown from 'primevue/dropdown';
-import InputText from 'primevue/inputtext';
-import MultiSelect from 'primevue/multiselect';
-import Button from 'primevue/button';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-import RadioButton from 'primevue/radiobutton';
-import Calendar from 'primevue/calendar';
-
-const form = ref({
-    dayType: '',
-    dayName: [],
-    isSpecialDay: false,
-    radioValue: null,
-    date: null,
-});
-
-const errors = ref({});
-const successMessage = ref('');
-const errorMessage = ref('');
-const multiselectValues = ref([
-    { name: 'Monday', label: 'Monday' },
-    { name: 'Tuesday', label: 'Tuesday' },
-    { name: 'Wednesday', label: 'Wednesday' },
-    { name: 'Thursday', label: 'Thursday' },
-    { name: 'Friday', label: 'Friday' },
-    { name: 'Saturday', label: 'Saturday' },
-    { name: 'Sunday', label: 'Sunday' },
-]);
+import { ProductService } from '@/service/ProductService';
 
 const customer1 = ref(null);
 const filters1 = ref(null);
 const loading1 = ref(true);
+const loading2 = ref(true);
+const products = ref(null);
+const statuses = reactive(['unqualified', 'qualified', 'new', 'negotiation', 'renewal', 'proposal']);
+
 const customerService = new CustomerService();
+const productService = new ProductService();
+
+const toggleStatus = (customer) => {
+  customer.status = customer.status === 'approved' ? 'pending' : 'approved';
+};
+
+const getSeverity = (status) => {
+  if (status.trim().toLowerCase() === 'approved') {
+    return 'success';
+  } else if (status.trim().toLowerCase() === 'pending') {
+    return 'warning';
+  } else {
+    return 'error'; 
+  }
+};
+
+const getStatusIcon = (status) => {
+  if (status.trim().toLowerCase() === 'approved') {
+    return 'pi pi-times-circle';
+  } else {
+    return 'pi pi-check-circle';
+  }
+};
 
 onBeforeMount(() => {
-    fetchCustomerData();
-});
+    productService.getProductsWithOrdersSmall().then((data) => {
+        products.value = data;
+        loading2.value = false;
+    });
 
-function fetchCustomerData() {
-    customerService.getDayTypes().then((data) => {
-        customer1.value = data.map((customer, index) => {
-            let dayName = customer.dayName !== null && customer.dayName !== 'null' ? 
-                customer.dayName.replace(/[\[\]"]/g, '') : '';
-            let specialDay = customer.date ? `Special Day ${customer.date}` : '';
-            let dayOrNight = customer.dayOrNight == 1 ? 'Night' : 'Day';
-
-            return {
-                ...customer,
-                sn: index + 1,
-                dayName: dayName,
-                specialDay: specialDay,
-                dayOrNight: dayOrNight,
-                date: customer.date ? new Date(customer.date).toLocaleDateString() : ''
-            };
-        });
+    customerService.getClientList().then((data) => {
+        customer1.value = data.map((customer, index) => ({
+            ...customer,
+            sn: index + 1,
+        }));
         loading1.value = false;
     });
-}
 
-function validateForm() {
-    if (!form.value.dayType) {
-        errors.value.dayType = 'Day type is required';
-    } else {
-        delete errors.value.dayType;
-    }
+    initFilters1();
+});
 
-    if (form.value.isSpecialDay) {
-        if (!form.value.date) {
-            errors.value.date = 'Date is required for special day';
-        } else {
-            delete errors.value.date;
-        }
-    } else {
-        if (!form.value.dayName.length) {
-            errors.value.dayName = 'At least one day must be selected';
-        } else {
-            delete errors.value.dayName;
-        }
-    }
+const initFilters1 = () => {
+  filters1.value = {
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    company_name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+    name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+    user_name: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+    email: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+    representative: { value: null, matchMode: FilterMatchMode.IN },
+    funding_limit: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+    status: { operator: FilterOperator.OR, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+  };
+};
 
-    if (form.value.radioValue === null) {
-        errors.value.radioValue = 'Day or Night selection is required';
-    } else {
-        delete errors.value.radioValue;
-    }
+const clearFilter1 = () => {
+  initFilters1();
+};
 
-    return Object.keys(errors.value).length === 0;
-}
+const formatCurrency = (value) => {
+  return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+};
 
-function handleSubmit() {
-    if (validateForm()) {
-        axios.post('/category/day/type', {
-            ...form.value,
-            dayOrNight: form.value.radioValue
-        }, {
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('token'),
-                'Content-Type': 'application/json',
-            }
-        })
-            .then(response => {
-                successMessage.value = "Rate Type added successfully";
-                resetForm();
-                fetchCustomerData();
-                setTimeout(() => {
-                    successMessage.value = '';
-                }, 3000);
-            })
-            .catch(error => {
-                console.error('Error submitting form:', error);
-                errorMessage.value = error.response?.data || 'An error occurred';
-            });
-    } else {
-        errorMessage.value = 'Please fill in all required fields.';
-    }
-}
+const formatDate = (value) => {
+  return value.toLocaleDateString('en-US', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+};
 
-function resetForm() {
-    form.value = { dayType: '', dayName: [], isSpecialDay: false, radioValue: null, date: null };
-}
+// Method to navigate to the update client page
+const navigateToUpdateClient = (clientSlug) => {
+    this.$router.push({ name: 'UpdateClient', params: { slug: clientSlug } });
+};
 
-function handleDelete(id) {
-    axios.delete(`/staff/role/delete/${id}`, {
-        headers: {
-            'Accept': 'application/json',
-            'Authorization': 'Bearer ' + localStorage.getItem('token'),
-        },
-    })
-        .then(response => {
-            successMessage.value = "Deletion successful";
-            fetchCustomerData();
-            setTimeout(() => {
-                successMessage.value = '';
-            }, 3000);
-        })
-        .catch(error => {
-            console.error('Error deleting record:', error);
-            errorMessage.value = error.response?.data || 'Failed to delete';
-        });
-}
 </script>
 
 <template>
-    <div class="col-12">
-        <div class="card">
-            <h5>Create Staff Role</h5>
-            <div class="col-12">
-                <div class="p-fluid formgrid grid">
-                    <div class="field col-12 md:col-4">
-                        <label for="dayType"><b> Days Type</b></label>
-                        <InputText id="dayType" v-model="form.dayType" type="text"
-                            placeholder="Enter Day Type" />
-                    </div>
-                    <div class="field col-12 md:col-4">
-                        <div class="row">
-                            <div class="label-section">
-                                <label v-show="!form.isSpecialDay" id="dayText">Select Day</label>
-                                <label v-show="form.isSpecialDay" id="dateText" style="font-size:13px">Select Date (Only for
-                                    Special day)</label>
-                            </div>
-                            <div class="checkbox-section">
-                                <input type="checkbox" v-model="form.isSpecialDay" id="specialDayCheckbox" />
-                                <label for="specialDayCheckbox" class="special-date-label">Special Date</label>
-                            </div>
-                        </div>
-                        <div class="mt-2">
-                            <MultiSelect v-model="form.dayName" v-show="!form.isSpecialDay"
-                                :options="multiselectValues" optionLabel="name" placeholder="Select up to 7 Days"
-                                :filter="true">
-                                <template #value="slotProps">
-                                    <div class="inline-flex align-items-center py-1 px-2 bg-primary text-primary border-round mr-2"
-                                        v-for="option in slotProps.value" :key="option.name">
-                                        <div>{{ option.name }}</div>
-                                    </div>
-                                </template>
-                                <template #option="slotProps">
-                                    <div class="flex align-items-center">
-                                        <div>{{ slotProps.option.name }}</div>
-                                    </div>
-                                </template>
-                            </MultiSelect>
-                            <div v-show="form.isSpecialDay">
-                                <Calendar :showIcon="true" :showButtonBar="true" v-model="form.date"></Calendar>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="field col-12 md:col-4">
-                        <label for="dayType"><b>Select Day Or Night</b></label>
-                        <div class="col-12 md:col-4">
-                            <RadioButton id="option1" name="dayOrNight" value="0" v-model="form.radioValue"
-                                class="mr-2" />
-                            <label for="option1">Day</label>
-                        </div>
-                        <div class="col-12 md:col-4 mt-3">
-                            <RadioButton id="option2" name="dayOrNight" value="1" v-model="form.radioValue"
-                                class="mr-2" />
-                            <label for="option2">Night</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="submit-container">
-                <Button label="Submit" @click="handleSubmit"></Button>
-            </div>
-            <div v-if="successMessage">{{ successMessage }}</div>
-            <div v-if="errorMessage">{{ errorMessage }}</div>
-        </div>
+    <div>
+        <router-link :to="{ name: 'newClient' }" class="text-light">
+            <Button label="Create +" rounded class="mb-2 mr-2" />
+        </router-link>
     </div>
+
     <div class="grid">
         <div class="col-12">
             <div class="card">
+                <h5>Client List</h5>
                 <DataTable :value="customer1" :paginator="true" :rows="10" dataKey="id" :rowHover="true"
-                    filterDisplay="menu" :loading="loading1" :filters="filters1" showGridlines>
-                    <template #empty> No customers found. </template>
-                    <template #loading> Loading customers data. Please wait. </template>
+                    v-model:filters="filters1" filterDisplay="menu" :loading="loading1" :filters="filters1"
+                    :globalFilterFields="['name', 'company_name', 'user_name', 'email', 'funding_limit', 'status']"
+                    showGridlines>
+                    <template #header>
+                        <div class="flex justify-content-between flex-column sm:flex-row">
+                            <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined
+                                @click="clearFilter1()" />
+
+                            <IconField iconPosition="left">
+                                <InputIcon class="pi pi-search" />
+                                <InputText v-model="filters1['global'].value" placeholder="Keyword Search"
+                                    style="width: 100%" />
+                            </IconField>
+                        </div>
+                    </template>
+                    <template #empty> No client found. </template>
+                    <template #loading>
+                        <div class="loading-container">
+                            <i class="pi pi-spinner pi-spin"></i>
+                            Loading client data. Please wait...
+                        </div>
+                    </template>
+
                     <Column field="sn" header="S/N" style="min-width: 4rem" />
-                    <Column field="companyName" header="Day Type Name" style="min-width: 12rem">
+                    <Column header="Company name" :sortable="true" filterField="representative"
+                        :showFilterMatchModes="false" :filterMenuStyle="{ width: '14rem' }" style="min-width: 14rem">
                         <template #body="{ data }">
-                            {{ data.dayType }}
+                            <div class="flex align-items-center gap-2">
+                                <img alt="Company name" :src="data.image" style="width: 32px" />
+                                <span>{{ data.company_name }}</span>
+                            </div>
+                        </template>
+                        <template #filter="{ filterModel }">
+                            <InputText type="text" v-model="filterModel.value" class="p-column-filter"
+                                placeholder="Search by Company Name" />
                         </template>
                     </Column>
-                    <Column field="dayTypes" header="Available Days" style="min-width: 12rem">
+
+                    <Column field="name" header="Name" :sortable="true" style="min-width: 12rem">
                         <template #body="{ data }">
-                            {{ data.dayName }} {{ data.specialDay }}
+                            {{ data.name }}
+                        </template>
+                        <template #filter="{ filterModel }">
+                            <InputText type="text" v-model="filterModel.value" class="p-column-filter"
+                                placeholder="Search by Name" />
                         </template>
                     </Column>
-                    <Column field="dayOrNight" header="Day Or Night" style="min-width: 12rem">
+                    
+                    <Column field="user_name" header="User Id" :sortable="true" style="min-width: 12rem">
                         <template #body="{ data }">
-                            {{ data.dayOrNight }}
+                            {{ data.user_name }}
+                        </template>
+                        <template #filter="{ filterModel }">
+                            <InputText type="text" v-model="filterModel.value" class="p-column-filter"
+                                placeholder="Search by User Id" />
                         </template>
                     </Column>
+
+                    <Column field="email" header="Email" :sortable="true" style="min-width: 12rem">
+                        <template #body="{ data }">
+                            {{ data.email }}
+                        </template>
+                        <template #filter="{ filterModel }">
+                            <InputText type="text" v-model="filterModel.value" class="p-column-filter"
+                                placeholder="Search by Email" />
+                        </template>
+                    </Column>
+
+                    <Column header="Funding Limit" filterField="funding_limit" :sortable="true" dataType="numeric"
+                        style="min-width: 10rem">
+                        <template #body="{ data }">
+                            {{ data.funding_limit }}
+                        </template>
+                        <template #filter="{ filterModel }">
+                            <InputNumber v-model="filterModel.value" mode="currency" currency="USD" locale="en-US" />
+                        </template>
+                    </Column>
+
+                    <Column field="status" header="Status" :sortable="true">
+                        <template #body="{ data }">
+                            <div class="status-tag">
+                                <Tag :severity="getSeverity(data.status)" class="status-label">
+                                    {{ data.status.toUpperCase() }}
+                                </Tag>
+                                <Button :icon="getStatusIcon(data.status)" @click="toggleStatus(data)"
+                                    class="p-button-rounded p-button-outlined" :class="getSeverity(data.status)" />
+                            </div>
+                        </template>
+                    </Column>
+
+                    <Column header="Rate Details" bodyClass="text-center" style="min-width: 8rem">
+                        <template #body>
+                            <router-link :to="{ name: 'newClient' }" class="text-light">
+                                <Button title="Rate Details" icon="pi pi-file-edit" severity="success" rounded outlined
+                                    class="" />
+                            </router-link>
+                        </template>
+                    </Column>
+                    
                     <Column header="Action" bodyClass="text-center" style="min-width: 8rem">
                         <template #body="{ data }">
-                            <Button icon="pi pi-trash" severity="danger" rounded outlined @click="handleDelete(data.id)" />
+                            <router-link :to="{ name: 'newClient' }" class="text-light">
+                                <Button title="Client Details" icon="pi pi-eye" severity="success" rounded outlined
+                                    class="mr-2" />
+                            </router-link>
+                            <router-link :to="{ name: 'newClient' }" class="text-light">
+                                <Button icon="pi pi-calendar" severity="success" rounded outlined class="" />
+                            </router-link>
+                            <!-- Update Client Button -->
+                            <Button
+                                title="Update Client"
+                                icon="pi pi-cog"
+                                severity="success"
+                                rounded
+                                outlined
+                                class=""
+                                @click="navigateToUpdateClient(data.slug)"
+                            />
                         </template>
                     </Column>
                 </DataTable>
@@ -246,52 +227,38 @@ function handleDelete(id) {
     </div>
 </template>
 
-<style scoped lang="scss">
-:deep(.p-datatable-frozen-tbody) {
-    font-weight: bold;
+<style scoped>
+.loading-container {
+    text-align: center;
+    padding: 1em;
 }
 
-:deep(.p-datatable-scrollable .p-frozen-column) {
-    font-weight: bold;
+.loading-container i {
+    font-size: 2em;
+    color: #007ad9;
 }
 
-.field .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.label-section {
-    flex: 1;
-}
-
-.checkbox-section {
+.status-tag {
     display: flex;
     align-items: center;
-    margin-left: auto;
-    /* Ensures the checkbox and label align to the right */
 }
 
-.special-date-label {
-    margin-left: 5px;
-    /* Space between checkbox and label */
-    white-space: nowrap;
-    /* Ensures the label stays on a single line */
+.status-label {
+    margin-right: 1em;
 }
 
-.mt-2 {
-    margin-top: 10px;
+.status-label.success {
+    background-color: #28a745;
+    color: white;
 }
 
-#dayText,
-#dateText {
-    font-weight: bold;
+.status-label.warning {
+    background-color: #ffc107;
+    color: black;
 }
 
-.submit-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    /* Adjust as needed */
+.status-label.error {
+    background-color: #dc3545;
+    color: white;
 }
 </style>

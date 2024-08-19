@@ -41,8 +41,8 @@
                     </div>
                     <div class="field col-12 md:col-6">
                         <label>Town/City <b class="text-red-500">*</b></label>
-                        <InputText type="text" v-model="form.townOrCity" />
-                        <small class="p-error" v-if="errors.townOrCity">{{ errors.townOrCity }}</small>
+                        <InputText type="text" v-model="form.city" />
+                        <small class="p-error" v-if="errors.city">{{ errors.city }}</small>
                     </div>
                     <div class="field col-12 md:col-6">
                         <label>Postcode <b class="text-red-500">*</b></label>
@@ -59,14 +59,14 @@
                         <small class="p-error" v-if="errors.email">{{ errors.email }}</small>
                     </div>
                     <div class="field col-12 md:col-6">
-                        <label>Password <b class="text-red-500">*</b></label>
+                        <label>Password </label>
                         <InputText type="password" v-model="form.password" />
-                        <small class="p-error" v-if="errors.password">{{ errors.password }}</small>
+                        <!-- <small class="p-error" v-if="errors.password">{{ errors.password }}</small> -->
                     </div>
                     <div class="field col-12 md:col-6">
-                        <label>Re-enter Password <b class="text-red-500">*</b></label>
+                        <label>Re-enter Password</label>
                         <InputText type="password" v-model="form.confirm_password" />
-                        <small class="p-error" v-if="errors.confirm_password">{{ errors.confirm_password }}</small>
+                        <!-- <small class="p-error" v-if="errors.confirm_password">{{ errors.confirm_password }}</small> -->
                     </div>
                     <div class="field col-12 md:col-6">
                         <label>Client Logo <b class="text-red-500">*</b></label>
@@ -87,22 +87,25 @@
                         <h4>Client Work Hours</h4>
                         <div class="p-fluid formgrid grid">
                             <div class="field col-12 md:col-4">
-                                <label for="day_start_time">Day Shift Start <b>(If applicable)</b> <b class="text-red-500">*</b></label>
+                                <label for="day_start_time">Day Shift Start <b>(If applicable)</b> <b
+                                        class="text-red-500">*</b></label>
                                 <InputText type="time" v-model="form.day_start_time" />
                                 <small class="p-error" v-if="errors.day_start_time">{{ errors.day_start_time }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label for="day_end_time">Day Shift End <b>(If applicable)</b> <b class="text-red-500">*</b></label>
+                                <label for="day_end_time">Day Shift End <b>(If applicable)</b> <b
+                                        class="text-red-500">*</b></label>
                                 <InputText type="time" v-model="form.day_end_time" />
                                 <small class="p-error" v-if="errors.day_end_time">{{ errors.day_end_time }}</small>
                             </div>
                             <div class="field col-12 md:col-4">
-                                <label for="break_time">Break Deduction <b>(Per Day in Minutes)</b> <b class="text-red-500">*</b></label>
+                                <label for="break_time">Break Deduction <b>(Per Day in Minutes)</b> <b
+                                        class="text-red-500">*</b></label>
                                 <InputText type="text" v-model="form.break_time" />
                                 <small class="p-error" v-if="errors.break_time">{{ errors.break_time }}</small>
                             </div>
                         </div>
-                    </div> 
+                    </div>
                 </div>
                 <div class="text-center mt-5">
                     <button class="p-button" @click="handleSubmit">Update Client</button>
@@ -128,7 +131,7 @@ export default {
                 funding_limit: '',
                 addressLine1: '',
                 addressLine2: '',
-                townOrCity: '',
+                city: '',
                 postCode: '',
                 description: '',
                 day_start_time: '',
@@ -148,7 +151,7 @@ export default {
                 funding_limit: null,
                 addressLine1: null,
                 addressLine2: null,
-                townOrCity: null,
+                city: null,
                 postCode: null,
                 description: null,
                 day_start_time: null,
@@ -166,7 +169,7 @@ export default {
         handleSubmit() {
             if (this.validateForm()) {
                 const slug = this.form.slug;
-                axios.put(`http://www.hiredengine.ai/api/app/client/update/${slug}`, this.form, {
+                axios.post(`/client/update/${slug}`, this.form, {
                     headers: {
                         'Accept': 'application/json',
                         'Authorization': 'Bearer ' + localStorage.getItem('token'),
@@ -221,14 +224,15 @@ export default {
             }
         },
         loadClientData(slug) {
-            axios.get(`http://www.hiredengine.ai/api/app/client/single/view/${slug}`, {
+            axios.get(`/client/single/view/${slug}`, {
                 headers: {
                     'Accept': 'application/json',
                     'Authorization': 'Bearer ' + localStorage.getItem('token')
                 }
             })
                 .then(response => {
-                    this.form = { ...this.form, ...response.data }; 
+                    console.log('Client data loaded:', response.data.client);
+                    this.form = { ...response.data.client}; 
                 })
                 .catch(error => {
                     console.error('Error loading client data:', error);
@@ -236,12 +240,8 @@ export default {
         }
     },
     mounted() {
-        const slug = this.$route.params.slug; 
+        const slug = this.$route.params.slug;
         this.loadClientData(slug);
     }
 };
 </script>
-
-<style scoped>
-/* Add any relevant styles here */
-</style>

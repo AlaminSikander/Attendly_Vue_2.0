@@ -614,15 +614,16 @@ export default {
 
         function handleSubmit() {
             // Ensure the required fields are in the correct format
-            form.value.cpcNumber = form.value.cpcNumber ? String(form.value.cpcNumber) : '';
+            form.value.cpcNumber = String(form.value.cpcNumber || '');
+            form.value.tachoNumber = String(form.value.tachoNumber || '');
             form.value.cpcExpiry = form.value.cpcExpiry ? new Date(form.value.cpcExpiry).toISOString() : '';
-            form.value.tachoNumber = form.value.tachoNumber ? String(form.value.tachoNumber) : '';
+
 
             // Ensure licence types are strings
             form.value.licenceTypes = form.value.licenceTypes.map(type => type.name);
 
             if (validateForm()) {
-                axios.post('/staff/registration', form.value, {
+                axios.post('/staff-registration', form.value, {
                     headers: {
                         'Accept': 'application/json',
                         'Authorization': 'Bearer ' + localStorage.getItem('token'),

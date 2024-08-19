@@ -27,6 +27,11 @@ const router = createRouter({
                     component: () => import('@/views/pages/client/clientList.vue')
                 },
                 {
+                    path: '/client/clientUpdate/:slug',
+                    name: 'clientUpdate',
+                    component: () => import('@/views/pages/client/clientUpdate.vue')
+                },
+                {
                     path: '/test/allTest',
                     name: 'allTest',
                     component: () => import('@/views/pages/test/allTest.vue')
